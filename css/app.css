@@ -1,0 +1,151 @@
+.mylogo{
+  list-style-type: none;
+  margin-left:5%;
+  /*padding-left:2%;*/
+  padding-bottom:10%;
+  font-size:0.5em;
+  width:100%;
+}
+
+#notify{
+  margin-top:2%;
+  display: block;
+}
+
+.sectionHead{
+  background-color:  #E0E0E0;;
+  padding:2% 2% 1% 2%;
+  font-weight:bold;
+  border:1px solid #eee;
+  border-radius:3px;
+vertical-align: top;
+}
+.sidebar {
+  list-style-type: none;
+  /*background:blue;*/
+  /*border-right:1px solid;*/
+  /*padding:3% 5% 3% 5%;*/
+  width:100%;
+}
+.sidebar a {
+  display:inline-block;
+  padding:3% 5% 3% 5%;
+  width:100%;
+  font-size:13px;
+}
+.sidebarDiv  li.sidebar:hover{
+  background:#eee;
+}
+.sidebarDiv  li.sidebar:active{
+  background:#eee;
+  border-left:1px red;
+}
+
+section.active form{
+  border:1px solid #eee;
+}
+.mycontent {
+  /*border:1px solid #eee;*/
+  /*border-radius:3px;*/
+  margin-left:8%;
+
+}
+.sidebarDiv li.sidebar {
+  border:1px solid #eee;
+}
+.sidebarDiv li.lastItem {
+  border-bottom-left-radius:3px;
+  border-bottom-right-radius:3px;
+}
+.sidebarDiv li.sideHead{
+    background-color: #E0E0E0;
+    font-weight: bold;
+    padding:3% 5% 3% 5%;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+}
+.sidebarDiv li.active {
+border-left:1px solid red;
+    text-shadow: 0 1px 0 #fff;
+}
+
+.sidebarDiv li.active a {
+  color:black;
+}
+
+.mybutton {
+  padding:4% 10%;
+}
+#notify a {
+  color:black;
+  text-decoration: underline;
+}
+
+.promptContent {
+  border: 1px solid #F8F8F8 ;
+  padding:2%;
+  background-color: #F8F8F8;
+
+}
+
+.promptHead {
+  margin-top:2%;
+  border: 1px solid #C8C8C8 ;
+  padding:1%;
+  font-weight:bold;
+  background-color: #C8C8C8;
+  
+}
+
+.clear{
+    clear:both;
+}
+
+.availability{
+  font-weight: bold;
+  margin-left:-15%;
+  padding:0;
+}
+
+.loading {
+  width: 20%;
+  height: auto;
+}
+
+
+.required:before{
+ content:"*" ;
+color:red
+}
+
+.promptContent ul{
+  list-style-type:none;
+}
+
+.promptContent ul li{
+  font-weight:bold;
+}
+
+.help {
+  font-size:10px;
+  padding:3%;
+  margin-right:1%;
+}
+
+.userC ul {
+  list-style-type:none;
+  margin-left:0%;
+}
+table ul {
+  list-style-type:none;
+  margin-left:0%;
+}
+table ul li {
+  font-size:12px;
+   padding:1%;
+}
+
+.userC ul li{
+  font-size:12px;
+  padding:0.5%;
+}
