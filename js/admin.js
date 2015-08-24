@@ -6,16 +6,9 @@ $(window).load(function() {
         event.preventDefault();
     });
 
-    $("#adminVpn").submit( function(event){
+    $("#manageUser").submit( function(event){
         if(form.canSubmit(this)){
-            handlers.admin.revokeVpn(event);
-        }
-        event.preventDefault();
-    });
-
-    $("#adminSsh").submit( function(event){
-        if(form.canSubmit(this)){
-            handlers.admin.revokeSsh(event);
+            handlers.admin.manageUser(event);
         }
         event.preventDefault();
     });
@@ -89,35 +82,15 @@ var handlers = {
             });
 
         },
-        revokeVpn: function(event){
-            var formDom = event.target;
-            var input = $("<input>")
-                           .attr("type", "hidden")
-                           .attr("name", "property").val("VPN");
-            $(formDom).append($(input));
-            form.submit.disable(formDom,"Revoking VPN");
+
+        manageUser: function(event){
+            var formDom = event.target
+            form.submit.disable(formDom,"Managing");
             form.submit.loading.show(formDom)
             var token = utils.getCookie("xsrftoken");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.revokeVpn.verify);
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.manageUser.verify);
             req.fail(function(){
-                utils.alert("alert","Request to Revoke VPN Failed");
-                form.submit.enable(formDom);
-                form.submit.loading.hide(formDom);
-                form.removeHiddenInputs(formDom.id);
-            });
-        },
-        revokeSsh: function(event){
-            var formDom = event.target;
-            var input = $("<input>")
-                           .attr("type", "hidden")
-                           .attr("name", "property").val("SSH");
-            $(formDom).append($(input));
-            form.submit.loading.show(formDom)
-            form.submit.disable(formDom,"Revoking SSH");
-            var token = utils.getCookie("xsrftoken");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.revokeSsh.verify);
-            req.fail(function(){
-                utils.alert("alert","Request to Revoke SSH Failed");
+                utils.alert("alert","Request to Manage User Failed");
                 form.submit.enable(formDom);
                 form.submit.loading.hide(formDom);
                 form.removeHiddenInputs(formDom.id);
@@ -142,7 +115,7 @@ var handlers = {
             form.submit.loading.show(formDom);
             $("#avlbl").empty();
             var token = utils.getCookie("xsrftoken");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.userSearch.confirm);
+            var req = $.post( "/admin/userSearch.php",$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.userSearch.confirm);
             req.fail(function(){
                 utils.alert("alert","Search Failed");
                 form.submit.enable(formDom);
@@ -184,45 +157,55 @@ var handlers = {
                     form.confirmForm("adPassForm", "Reset Password");
                 }
             },
-            revokeVpn : {
-                verify: function(data) {
+            manageUser: {
+                verify: function(data){
                     if(data['success']){
-                        var confirmButton = "<br><button id='cnfButton' onclick='handlers.admin.action.revokeVpn.confirm()' value='Confirm'> Confirm VPN Revoke</button>";
+                        var button1 = "<br><button id='button1' onclick='handlers.admin.action.manageUser.confirm(this)' value='revokeVPN'> Revoke VPN</button>";
+                        var button2 = " <button id='button2' onclick='handlers.admin.action.manageUser.confirm(this)' value='revokeSSH'> Revoke SSH</button>";
+                        var button3 = " <button id='button3' onclick='handlers.admin.action.manageUser.confirm(this)' value='disable'> Disable</button>";
+                        var button4 = " <button id='button4' onclick='handlers.admin.action.manageUser.confirm(this)' value='enable'> Enable</button>";
+                        var confirmButton = button1 + button2 + button3 + button4;
                         var input1 = $("<input>")
                                .attr("type", "hidden")
                                .attr("name", "dn").val(data["data"]["dn"]);
-                        $("#adminVpn").append($(input1));
-                        utils.prompt("Are you sure, you want to revoke VPN Credentials for the following user?", utils.getInfoHtml(data["data"]) + confirmButton)
+                        var formDom = $("section.active form")
+                        $(formDom).append($(input1));
+                        $(formDom).data("data", data["data"]);
+                        utils.prompt("Please choose the desired action.", utils.getInfoHtml(data["data"]) + confirmButton)
                     } else {
                         utils.alert("warning",data["errors"][0]);
-                        var formDom = document.getElementById("adminVpn");
+                        var formDom = $("section.active form")
                         form.submit.enable(formDom);
                         form.submit.loading.hide(formDom);
                     }
                 },
-                confirm: function(){
-                    form.confirmForm("adminVpn", "Revoke VPN Credentials");
-                }
-              },
-            revokeSsh : {
-                verify: function(data) { 
-                    if(data['success']){
-                        var confirmButton = "<br><button id='cnfButton' onclick='handlers.admin.action.revokeSsh.confirm()' value='Confirm'> Confirm SSH Revoke</button>";
-                         var input1 = $("<input>")
+                confirm : function(buttonObj){
+                    var input2 = $("<input>")
                                .attr("type", "hidden")
-                               .attr("name", "dn").val(data["data"]["dn"]);
-                        $("#adminSsh").append($(input1));
-                     
-                        utils.prompt("Are you sure, you want to revoke SSH Credentials for the following user?", utils.getInfoHtml(data["data"]) + confirmButton)
-                    } else {
-                        utils.alert("warning",data["errors"][0]);
-                        var formDom = document.getElementById("adminSsh");
-                        form.submit.enable(formDom);
-                        form.submit.loading.hide(formDom);
+                               .attr("name", "userAction").val(buttonObj.value)
+                    var formDom = $("section.active form")
+                    $(formDom).append($(input2));
+                    var cnfButton = "<br><button id='cnfButton' onclick='handlers.admin.action.manageUser.confirm2(\""+buttonObj.innerHTML+"\")' value='"+buttonObj.value+"'> "+buttonObj.innerHTML+"</button>";
+                    switch(buttonObj.value){
+                        case "revokeVPN": 
+                                    utils.updatePrompt("Are you sure you want to Revoke VPN Credentials for the following user", utils.getInfoHtml($(formDom).data("data")) + cnfButton )
+                                    break;
+                        case "revokeSSH":
+                                    utils.updatePrompt("Are you sure you want to Revoke SSH Credentials for the following user", utils.getInfoHtml($(formDom).data("data")) + cnfButton )
+                                    break;
+                        case "disable":
+                                    utils.updatePrompt("Are you sure you want to Disable the following user", utils.getInfoHtml($(formDom).data("data")) + cnfButton )
+                                    break;
+                        case "enable":
+                                    utils.updatePrompt("Are you sure you want to Enable the following user", utils.getInfoHtml($(formDom).data("data")) + cnfButton )
+                                    break;
                     }
                 },
-                confirm: function(){
-                    form.confirmForm("adminSsh", "Revoke SSH Credentials");
+                confirm2 : function(action){
+                    var formDom = $("section.active form")
+                    var name = $(formDom).data("data")["name"];
+                    $(formDom).attr("action","/admin/manageUser.php")
+                    form.confirmForm($(formDom).attr('id'), action + " of \"" + name +"\"");
                 }
             },
             addUser: {
@@ -250,7 +233,7 @@ var handlers = {
                 }
             },
             userSearch:{
-                confirm: function(data){
+                confirm: function(data) {
                     var alertClose = document.getElementById("alertClose");
                     if(alertClose)
                         alertClose.click();
@@ -288,6 +271,10 @@ var handlers = {
                                             return "-";
                                         }
                                     }
+                                },
+                                { "title": "Manage", "data":"sAMAccountName", "render": function (data,type,full,meta){
+                                        return "<button type='button' class='label tiny radius mybutton' onclick='handlers.admin.action.userSearch.manageUser(\""+data+"\")'> Manage</button>";
+                                   }
                                 }
                             ]
                         })
@@ -299,6 +286,24 @@ var handlers = {
                     var formDom = $("section.active").find("form")
                     form.submit.enable(formDom);
                     form.submit.loading.hide(formDom);
+                },
+                manageUser: function(uname){
+                    var token = utils.getCookie("xsrftoken");
+                    var uName = $('section.active form #uname');
+                    if (uName.val()){
+                        uName.val(uname);
+                    } else {
+                         var input = $("<input>")
+                                   .attr("id","uname")
+                                   .attr("type", "hidden")
+                                   .attr("name", "uname").val(uname);
+                         $("#user_search").append($(input));
+                    }
+                    var req = $.post( "/admin/manageUser.php",$("#user_search").serialize() + "&xsrftoken="+token, handlers.admin.action.manageUser.verify);
+                    req.fail(function(){
+                        utils.alert("alert","Request to Manage User Failed");
+                        form.removeHiddenInputs(formDom.id);
+                    });
                 }
             },
             groupSearch:{

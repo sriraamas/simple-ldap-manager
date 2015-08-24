@@ -74,7 +74,7 @@ class User {
         $zip -> addFromString("client.key", $priv);
         $zip -> addFromString("client.crt", $cert);
         $status = $zip -> close();
-        $updateStatus = $this -> updateMyAttribute("lucidVpnCert", $pub);
+        $updateStatus = $this -> updateMyProperty("VPN", $pub);
         if(!$updateStatus){
             unlink($zipFilename);
             throw new Exception("Error occured during LDAP Update. Please try again Later!");
@@ -90,10 +90,19 @@ class User {
         return($result);
     }
 
-    public function updateMyAttribute($attr, $value){
+    public function updateMyProperty($prop, $value){
         $ldapObj = new Lucid_LDAP($this->configFile);
         $ldapObj -> bind($this->username, $this->password);
         $myDn = $this->getMyDN($ldapObj);
+        if($prop === "SSH"){
+            $attr = $ldapObj -> SSH;
+        }
+        if($prop === "VPN"){
+            $attr = $ldapObj -> VPN;
+        }
+        if (!isset($attr)){
+            throw new Exception("Unknown Property $prop");
+        }
         $update_status = $ldapObj -> updateAttribute($myDn, $attr, $value);
         $ldapObj -> destroy();
         return($update_status);
@@ -126,7 +135,7 @@ class User {
         $pubKey = file_get_contents("$this->username.pem.pub");
         unlink("$this->username.pem.pub");
         unlink("$this->username.pem");
-        $updateStatus = $this -> updateMyAttribute("lucidSshKey", $pubKey);
+        $updateStatus = $this -> updateMyProperty("SSH", $pubKey);
         if(!$updateStatus){
             unlink($zipFilename);
             throw new Exception("Error occured during LDAP Update. Please try again Later!");

@@ -30,11 +30,10 @@ setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 da
         <li class="tab-title mylogo no-hover" role="presentation"><h5><img class="logo maw-100 rs d-n_2" src="https://d2slcw3kip6qmk.cloudfront.net/marketing/logos/lucidsoftware-logo-text-194x42.png" alt="Lucid Software, Inc."></h5></li>
         <li class="sidebar  sideHead">Admin</li>
         <li class="sidebar active" role="presentation"><a href="#panel2-1" role="tab" tabindex="0" aria-controls="panel2-1">Reset Password</a></li>
-        <li class="sidebar" role="presentation"><a href="#panel2-2" role="tab" tabindex="1" aria-controls="panel2-2">Revoke VPN</a></li>
-        <li class="sidebar" role="presentation"><a href="#panel2-3" role="tab" tabindex="2" aria-controls="panel2-3">Revoke SSH</a></li>
-        <li class="sidebar" role="presentation"><a href="#panel2-4" role="tab" tabindex="3" aria-controls="panel2-4">Add User</a></li>
-        <li class="sidebar" role="presentation"><a href="#panel2-5" role="tab" tabindex="3" aria-controls="panel2-5">User Search</a></li>
-        <li class="sidebar lastitem" role="presentation"><a href="#panel2-6" role="tab" tabindex="4" aria-controls="panel2-6">Groups Search</a></li>
+        <li class="sidebar" role="presentation"><a href="#panel2-2" role="tab" tabindex="2" aria-controls="panel2-2">Manage Users</a></li>
+        <li class="sidebar" role="presentation"><a href="#panel2-3" role="tab" tabindex="3" aria-controls="panel2-3">Add User</a></li>
+        <li class="sidebar" role="presentation"><a href="#panel2-4" role="tab" tabindex="3" aria-controls="panel2-4">User Search</a></li>
+        <li class="sidebar lastitem" role="presentation"><a href="#panel2-5" role="tab" tabindex="4" aria-controls="panel2-5">Groups Search</a></li>
       </ul>
     </div>
     <div class="large-8 small-10 columns">
@@ -43,20 +42,18 @@ setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 da
 <section role="tabpanel" aria-hidden="false" class="content active " id="panel2-1">
     <?php include("forms/admin_chpass.php"); ?>
 </section>
+
 <section role="tabpanel" aria-hidden="true" class="content" id="panel2-2">
-    <?php include("forms/admin_vpn.php");?>
+    <?php include("forms/admin_manage.php");?>
 </section>
 
 <section role="tabpanel" aria-hidden="true" class="content" id="panel2-3">
-    <?php include("forms/admin_ssh.php"); ?>
-</section>
-<section role="tabpanel" aria-hidden="true" class="content" id="panel2-4">
     <?php include("forms/admin_newuser.php"); ?>
 </section>
-<section role="tabpanel" aria-hidden="true" class="content" id="panel2-5">
+<section role="tabpanel" aria-hidden="true" class="content" id="panel2-4">
     <?php include("forms/user_search.php"); ?>
 </section>
-<section role="tabpanel" aria-hidden="true" class="content" id="panel2-6">
+<section role="tabpanel" aria-hidden="true" class="content" id="panel2-5">
     <?php include("forms/group_search.php"); ?>
 </section>
 

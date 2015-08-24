@@ -18,6 +18,13 @@ function LDAPtoTS($ldapTs) {
     return $ts;
 }
 
+
+abstract class ADUserAccountStatus
+{
+    const Enabled = 512;
+    const Disabled = 514;
+}
+
 //Returns Client Certificate, PublicKey and PrivateKey for a user of $commonName, $email and length $keyLength
 function generateSslKeypair( $commonName, $mail, $keyLength){
   $key = openssl_pkey_new(array("private_key_bits" =>$keyLength));
