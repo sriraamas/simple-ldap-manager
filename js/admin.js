@@ -80,7 +80,8 @@ var handlers = {
             var formDom = event.target;
             form.submit.loading.show(formDom);
             form.submit.disable(formDom,"Resetting Password");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.admin.action.resetPwd.verify);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token , handlers.admin.action.resetPwd.verify);
             req.fail(function(){
                 utils.alert("alert","Request to Reset Password Failed");
                 form.submit.enable(formDom);
@@ -96,7 +97,8 @@ var handlers = {
             $(formDom).append($(input));
             form.submit.disable(formDom,"Revoking VPN");
             form.submit.loading.show(formDom)
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.admin.action.revokeVpn.verify);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.revokeVpn.verify);
             req.fail(function(){
                 utils.alert("alert","Request to Revoke VPN Failed");
                 form.submit.enable(formDom);
@@ -112,7 +114,8 @@ var handlers = {
             $(formDom).append($(input));
             form.submit.loading.show(formDom)
             form.submit.disable(formDom,"Revoking SSH");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.admin.action.revokeSsh.verify);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.revokeSsh.verify);
             req.fail(function(){
                 utils.alert("alert","Request to Revoke SSH Failed");
                 form.submit.enable(formDom);
@@ -124,7 +127,8 @@ var handlers = {
             var formDom = event.target;
             form.submit.disable(formDom,"Creating User");
             form.submit.loading.show(formDom);
-            var req = $.post("admin/getGroups.php",$(formDom).serialize(), handlers.admin.action.addUser.verify);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post("admin/getGroups.php",$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.addUser.verify);
             req.fail(function(){
                 utils.alert("alert","Request to Create User Failed");
                 form.submit.enable(formDom);
@@ -137,7 +141,8 @@ var handlers = {
             form.submit.disable(formDom,"Searching");
             form.submit.loading.show(formDom);
             $("#avlbl").empty();
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.admin.action.userSearch.confirm);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.userSearch.confirm);
             req.fail(function(){
                 utils.alert("alert","Search Failed");
                 form.submit.enable(formDom);
@@ -149,7 +154,8 @@ var handlers = {
             form.submit.disable(formDom,"Searching");
             form.submit.loading.show(formDom);
             $("#avlbl").empty();
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.admin.action.groupSearch.confirm);
+            var token = utils.getCookie("xsrftoken");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.groupSearch.confirm);
             req.fail(function(){
                 utils.alert("alert","Search Failed");
                 form.submit.enable(formDom);
@@ -319,8 +325,9 @@ var handlers = {
                            if(!accordion.data("users")) {
                                 $(accordion).html("<img src='img/loading.gif' class='loading' id='loading' />");
                                 var encId = encodeURIComponent(accordion.parent()[0].id);
-                                $.post("admin/getUsersInGroup.php",
-                                $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId,
+                                var token = utils.getCookie("xsrftoken");
+                                $.post("/admin/getUsersInGroup.php",
+                                $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId + "&xsrftoken=" + token,
                                 function(data){
                                     var str ;
                                     var users = data["data"];
@@ -354,9 +361,11 @@ var handlers = {
             var noAdminName = ($("#newUser").find('#aname').val() == "")
             var noAdminPwd = ($("#newUser").find('#apwd').val() == "")
             var noUserName = ($("#newUser").find('#uname').val() == "")
+
             if ( !noAdminName && !noAdminPwd && !noUserName){
-                $.post("admin/check_username.php",
-                     $("#newUser").find("#aname, #apwd, #uname").serialize(),
+                var token = utils.getCookie("xsrftoken");
+                $.post("/admin/checkUsername.php",
+                     $("#newUser").find("#aname, #apwd, #uname,#xsrftoken").serialize() + "&xsrftoken="+token,
                     function (data){
                         if (data["success"]){
                             var username =  $("#newUser").find('#uname').val()

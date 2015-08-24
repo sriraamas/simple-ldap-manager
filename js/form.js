@@ -45,6 +45,10 @@ var form = {
     confirmForm: function(formId, action){
         var formDom = document.getElementById(formId);
         form.submit.loading.show(formDom)
+        var input = $("<input>")
+                               .attr("type", "hidden")
+                               .attr("name", "xsrftoken").val(utils.getCookie("xsrftoken"));
+        $("#"+formId).append($(input));
         var alertClose = document.getElementById("alertClose");
         var myModalClose = document.getElementById("myModalClose");
         myModalClose.click();

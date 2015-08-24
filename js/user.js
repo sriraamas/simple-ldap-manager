@@ -28,10 +28,12 @@ var handlers = {
             var alertClose = document.getElementById("alertClose");
                 if(alertClose)
                     alertClose.click();
+            var token = utils.getCookie("xsrftoken");
+
             var formDom = event.target;
             form.submit.loading.show(formDom);
             form.submit.disable(formDom,"Changing Password");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.user.action.resetPwd);
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() +"&xsrftoken="+token, handlers.user.action.resetPwd);
             req.fail(function(){
                 utils.alert("alert","Request to Reset Password Failed");
             });
@@ -44,10 +46,11 @@ var handlers = {
             var alertClose = document.getElementById("alertClose");
                 if(alertClose)
                     alertClose.click();
+            var token = utils.getCookie("xsrftoken");
             var formDom = event.target;
             form.submit.loading.show(formDom);
             form.submit.disable(formDom,"Regenerating VPN Credentials");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.user.action.genVpn);
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() +"&xsrftoken="+token, handlers.user.action.genVpn);
             req.fail(function(){
                 utils.alert("alert","Request to Generate VPN Credentials Failed");
             });
@@ -61,10 +64,11 @@ var handlers = {
             var alertClose = document.getElementById("alertClose");
                 if(alertClose)
                     alertClose.click();
+            var token = utils.getCookie("xsrftoken");
             var formDom = event.target;
             form.submit.loading.show(formDom);
             form.submit.disable(formDom,"Regenerating SSH Credentials");
-            var req = $.post( $(formDom)[0].action,$(formDom).serialize(), handlers.user.action.genSsh);
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() +"&xsrftoken="+token, handlers.user.action.genSsh);
             req.fail(function(){
                 utils.alert("alert","Request to Generate SSH Credentials Failed");
             });

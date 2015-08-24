@@ -1,7 +1,9 @@
-<!DOCTYPE html>
 <?php
-setcookie("xsrftoken", "22a7cfaa8a6ba642b3269f32aad8a601", time() + (86400 * 30), "/"); // 86400 = 1 day
+require_once("core/util.php");
+$randomStr = randomPassword(16);
+setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 day
 ?>
+<!DOCTYPE html>
 <!-- saved from url=(0049)http://foundation.zurb.com/templates/sidebar.html -->
 <html class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" lang="en" data-useragent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2209.0 Safari/537.36"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">

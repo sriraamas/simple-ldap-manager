@@ -1,5 +1,5 @@
 <?php
-if(!isset($_POST['aname']) || !isset($_POST['apwd']) || !isset($_COOKIE["xsrftoken"])){
+if(!isset($_POST['aname']) || !isset($_POST['apwd']) || !isset($_COOKIE["xsrftoken"]) || !isset($_POST["xsrftoken"]) || ($_COOKIE["xsrftoken"] !== $_POST['xsrftoken']) ){
     header('Location:/admin-ss.php');
     die();
 }

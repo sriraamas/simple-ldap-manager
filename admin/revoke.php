@@ -1,6 +1,6 @@
 <?php
-if(!isset($_POST['aname']) || !isset($_POST['apwd']) || !isset($_POST['uname']) || !isset($_COOKIE["xsrftoken"])){
-    header('Location:/admin-ss.php');
+if(!isset($_POST['aname']) || !isset($_POST['apwd']) || !isset($_POST['uname']) || !isset($_COOKIE["xsrftoken"]) || !isset($_POST["xsrftoken"]) || ($_COOKIE["xsrftoken"] !== $_POST['xsrftoken'])){
+    // header('Location:/admin-ss.php');
     die();
 }
 require_once('../core/admin.php');
