@@ -40,9 +40,18 @@ class Admin extends User {
         return($final);
     }
 
-    //Returns the status of deleting attribute $attrib for user given by $dn
-    public function revoke($dn, $attrib){
+    //Returns the status of Revoking VPN/SSH for user given by $dn
+    public function revoke($dn, $property){
         $ldapObj = new Lucid_LDAP($this->configFile);
+        if($property === "VPN"){
+            $attrib = $ldapObj -> VPN;
+        } 
+        if($property === "SSH"){
+            $attrib = $ldapObj -> SSH;
+        }
+        if (!isset($attrib)){
+            throw new Exception("Invalid Property $property");
+        }
         $ldapObj -> bind($this->username, $this->password);
         $status  = $ldapObj -> delAttribute($dn, $attrib);
         $ldapObj -> destroy();

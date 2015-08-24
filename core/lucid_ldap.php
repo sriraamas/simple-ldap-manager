@@ -16,6 +16,9 @@ class Lucid_LDAP {
         $this -> conn = FALSE;
         $this -> logger = new Logger();
         $this -> url = $config['hostname'].":".$config['port'];
+        $this -> VPN = $config['vpn'];
+        $this -> SSH = $config['ssh'];
+
     }
 
     public function bind($username, $password){

@@ -12,16 +12,16 @@ try{
     if(isset($_POST['dn']) && isset($_POST["userAction"])) {
         switch ($_POST["userAction"]){
              case "revokeVPN":
-                            $result = $adminObj -> revoke($_POST['dn'],"lucidVpnCert");
+                            $result = $adminObj -> revoke($_POST['dn'],"VPN");
                             break;
              case "revokeSSH": 
-                            $result = $adminObj -> revoke($_POST['dn'],"lucidSshKey");
+                            $result = $adminObj -> revoke($_POST['dn'],"SSH");
                             break;
              case "disable":
-                            $result = $adminObj -> updateAttr($_POST['dn'],"userAccountControl",514);
+                            $result = $adminObj -> updateAttr($_POST['dn'],"userAccountControl",ADUserAccountStatus::Disabled);
                             break;
              case "enable":
-                            $result = $adminObj -> updateAttr($_POST['dn'],"userAccountControl",512);
+                            $result = $adminObj -> updateAttr($_POST['dn'],"userAccountControl",ADUserAccountStatus::Enabled);
                             break;
              default:
                             throw new Exception("Invalid Action");
