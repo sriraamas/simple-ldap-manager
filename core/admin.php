@@ -16,17 +16,28 @@ class Admin extends User {
         return $status;
     }
 
+
     //Returns an array containing 'name', 'mail' and 'dn' of User
     public function getUserInfo($uname,$attr=array()){
         $ldapObj = new Lucid_LDAP($this->configFile);
         $ldapObj -> bind($this->username, $this->password);
         $result = $ldapObj -> getAttributes($uname,array_merge($attr, array("name", "mail","distinguishedName")));
         $ldapObj -> destroy();
-        return array( 
+        $final =  array( 
             "name" => $result["name"][0],
             "mail" =>  $result["mail"][0],
             "dn" => $result["distinguishedName"][0]
         );
+        foreach ($attr as $val){
+            if ( isset($result[$val]) )
+                $final[$val] = $result[$val][0];
+                if ($val == "userAccountControl"){
+                    $final[$val] = getAccountStatus($result[$val][0]);
+                }
+            else 
+                $final[$val] = "";
+        }
+        return($final);
     }
 
     //Returns the status of deleting attribute $attrib for user given by $dn
@@ -143,7 +154,18 @@ class Admin extends User {
         $ldapObj -> destroy();
         return $results;
     }
+
+    public function updateAttr($dn, $attrib, $value){
+        $ldapObj = new Lucid_LDAP($this->configFile);
+        $ldapObj -> bind($this->username, $this->password);
+        $status = $ldapObj -> updateAttribute($dn, $attrib, $value);
+        $ldapObj -> destroy();
+         if($status === true){
+            $this->loggerObj -> log("ADMIN::info::$this->username has updated $attrib for $dn successfully");
+        } else {
+            $this->loggerObj -> log("ADMIN::error::{$this->username}'s Attempt to update $attrib for $dn has failed. Reason: $status");
+        }
+        return $status;
+    }
 }
-
-
 ?>

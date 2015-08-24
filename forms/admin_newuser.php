@@ -7,7 +7,7 @@
 </div>
 <br>
       <div >
-      <p class="sectionHead">New User Info</p>
+      <p class="sectionHead">Create New User</p>
       <div class="row">
         <div class="large-4 small-6 push-1 columns">
           <label  class="required">First Name

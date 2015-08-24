@@ -31,11 +31,15 @@ var utils = {
     },
 
     getInfoHtml: function(data){
-        var str = "<ul>"
-        str += "<li> Name: "+data["name"]  + "</li>" ;
-        str += "<li> Email: " + data["mail"] +"</li>";
-        str += "<li> DN: " + data["dn"]  + "</li>";
-        str += "</ul>";
+        var str = "<table>"
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                str += "<tr>";
+                str += "<th> " +key+"</th> <td>"+data[key]  + "</td>";
+                str += "</tr>";
+            }
+        }
+        str += "</table>";
         return str;
     },
     getCookie: function(cname) {
@@ -49,18 +53,18 @@ var utils = {
         return "";
     },
     getNewUserInfoHtml: function(){
-        var info = ""
-        info += "First Name:" + $("#newUser").find("#fn").val() +"<br/>"
-        info += "Middle Name:" + $("#newUser").find("#mn").val() +"<br/>"
-        info += "Last Name:" + $("#newUser").find("#ln").val() +"<br/>"
-        info += "Username:" +$("#newUser").find("#uname").val() +"<br/>"
-        info += "Phone Number: <br>" + $("#newUser").find("#phone").val() + ":"+ $("#newUser").find("#ph").val() +"<br/>"
-        info += "Groups:<ul>";
+        var info = "<table>"
+        info += "<tr><th>First Name</th>" + "<td>"+$("#newUser").find("#fn").val() +"</td></tr>"
+        info += "<tr><th>Middle Name</th>" + "<td>"+ $("#newUser").find("#mn").val() +"</td></tr>"
+        info += "<tr><th>Last Name</th>" + "<td>"+ $("#newUser").find("#ln").val() +"</td></tr>"
+        info += "<tr><th>Username:" + "<td>"+$("#newUser").find("#uname").val() +"<td></tr>"
+        info += "<tr><th>Phone(" + $("#newUser").find("#phone").val() + ")</th><td>"+ $("#newUser").find("#ph").val() +"</td></tr>"
+        info += "<tr><th>Groups:</th><td><ul>";
         var selected = $("#newUser").find("input[type=hidden]");
         for(var i=0;i<selected.length;i++){
             info += "<li>" + selected[i].value + "</li>";
         }
-        info += "</ul>"
+        info += "</ul></td></tr></table>"
         return info;
     },
     getDataHtml: function(data){
