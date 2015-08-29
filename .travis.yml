@@ -1,0 +1,30 @@
+after_success:
+  - |
+    if [ "$TRAVIS_PULL_REQUEST" == false ] && [ "$TRAVIS_BRANCH" == master ]; then
+      VERSION="`cat version`"
+      if [ "$VERSION" == *-dev ]; then
+        COMPONENT=dev
+        VERSION+=$TRAVIS_BUILD_NUMBER
+      else
+        COMPONENT=main
+      fi
+      echo Publishing version $VERSION
+      curl -X PUT \
+        -H 'X-Bintray-Debian-Architecture: all' \
+        -H "X-Bintray-Debian-Component: $COMPONENT" \
+        -H 'X-Bintray-Debian-Distribution: trusty,vivid' \
+        -H 'X-Bintray-Publish: 1' \
+        -u$BINTRAY_USER:$BINTRAY_API_KEY \
+        -T dist/simple-ldap-manager.deb \
+        https://api.bintray.com/content/lucidsoftware/apt/simple-ldap-manager/$VERSION/simple-ldap-manager.deb
+    fi
+language: php
+php:
+  - 5.5
+script:
+  - |
+    export VERSION="`cat version`"
+    if [ "$VERSION" == *-dev ]; then
+      VERSION+=$TRAVIS_BUILD_NUMBER
+    fi
+  - make dist/simple-ldap-manager.deb
