@@ -329,27 +329,34 @@ var handlers = {
                         $(document).foundation('accordion', 'reflow');
                         $('.userAccordion').on('toggled', function (event, accordion) {
                            if(!accordion.data("users")) {
-                                $(accordion).html("<img src='img/loading.gif' class='loading' id='loading' />");
+                                $(accordion).html("<img src='/img/loading.gif' class='loading' id='loading' />");
                                 var encId = encodeURIComponent(accordion.parent()[0].id);
                                 var token = utils.getCookie("xsrftoken");
-                                $.post("/admin/getUsersInGroup.php",
+                                var query = $.post("/admin/getUsersInGroup.php",
                                 $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId + "&xsrftoken=" + token,
                                 function(data){
-                                    var str ;
-                                    var users = data["data"];
-                                    if(users.length > 0) {
-                                        str = "<ul>";
-                                        for (var i=0; i< users.length;i++){
-                                            str += "<li><span class='text-center label radius' >";
-                                            str += users[i];
-                                            str += "</span></li>";
+                                    if(data["success"]){
+                                        var str;
+                                        var users = data["data"];
+                                        if(users.length > 0) {
+                                            str = "<ul>";
+                                            for (var i=0; i< users.length;i++){
+                                                str += "<li><span class='text-center label radius' >";
+                                                str += users[i];
+                                                str += "</span></li>";
+                                            }
+                                        } else {
+                                            str = "No Users";
                                         }
+                                        $(accordion).html(str);
+                                        accordion.data("users",true);
                                     } else {
-                                        str = "No Users";
+                                        $(accordion).html("<span class='text-center' style='color:red'>"+data["errors"][0] + "</span>");
                                     }
-                                    $(accordion).html(str);
-                                    accordion.data("users",true);
                                 });
+                            query.fail(function(){
+                                $(accordion).html("<span class='text-center' style='color:red'> Error Occured </span>");
+                            });
                            }
 
                         });
