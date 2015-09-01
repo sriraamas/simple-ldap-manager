@@ -62,6 +62,8 @@ $(window).load(function() {
         if(alertClose)
             alertClose.click();
     });
+    $("#admin-ss-topright").addClass("active");
+    $("#user-ss-topright").removeClass("active");
 });
 
 

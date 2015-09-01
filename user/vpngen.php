@@ -11,10 +11,11 @@ try{
     $filename = $user -> genMyVpnKeys();
     $contents = file_get_contents($filename);
     unlink($filename);
+    $pathInfo = pathinfo($filename);
     $response = array(
         'success' => true,
         'data' => array(
-            'filename' => $filename,
+            'filename' => $pathInfo["basename"],
             'contents' => base64_encode($contents)
         ),
         'errors' => array());

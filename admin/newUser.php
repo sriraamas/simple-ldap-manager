@@ -14,11 +14,12 @@ $admin_pwd = $_POST['apwd'];
 $groups = $_POST['groups'];
 $phoneType = $_POST['phone'];
 $ph = $_POST['ph'];
+$domain = $_POST['domain'];
 try {
     $adminObj = new Admin($admin_uname, $admin_pwd);
     if($adminObj->isUnique($uname)){
         $pwd = randomPassword(8);
-        $status = $adminObj -> createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phoneType, $ph);
+        $status = $adminObj -> createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phoneType, $ph,$domain);
         if ($status === true){
             $response = array('success' => true, 'data' => array("username" => $uname, "password" => $pwd) ,'errors' => array() );
         } else {

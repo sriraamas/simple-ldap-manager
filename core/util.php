@@ -18,6 +18,12 @@ function LDAPtoTS($ldapTs) {
     return $ts;
 }
 
+function getConfig($configName) {
+    $config = parse_ini_file("config.ini");
+    if(!$config)
+            throw new Exception("No Config file found");
+    return $config[$configName];
+}
 
 abstract class ADUserAccountStatus
 {
@@ -25,7 +31,7 @@ abstract class ADUserAccountStatus
     const Disabled = 514;
 }
 
-//Returns Client Certificate, PublicKey and PrivateKey for a user of $commonName, $email and length $keyLength
+//Returns Client Certificate and PrivateKey for a user of $commonName, $email and length $keyLength
 function generateSslKeypair( $commonName, $mail, $keyLength){
   $key = openssl_pkey_new(array("private_key_bits" =>$keyLength));
   $certConf = parse_ini_file("cert.conf",true);
@@ -45,9 +51,8 @@ function generateSslKeypair( $commonName, $mail, $keyLength){
     throw new Exception("Error occured while signing certificate");
   }
   openssl_pkey_export($key,$privateKey); // Export private-key to $privateKey
-  openssl_x509_export($signed, $clientCert, FALSE); // Export signed-certificate to $clientCert
-  openssl_x509_export($signed, $publicKey); // Export public-key from the signed-certificate to $publicKey
-  return(array($clientCert,$publicKey,$privateKey));
+  openssl_x509_export($signed, $clientCert); // Export signed-certificate to $clientCert without Extra Details
+  return(array($clientCert,$privateKey));
 }
 
 //Returns Random password of $len

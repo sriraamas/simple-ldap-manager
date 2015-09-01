@@ -18,6 +18,8 @@ $(window).load(function() {
         }
         event.preventDefault();
     });
+    $("#user-ss-topright").addClass("active");
+    $("#admin-ss-topright").removeClass("active");
     
 });
 
