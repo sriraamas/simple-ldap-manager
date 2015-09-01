@@ -328,7 +328,6 @@ var handlers = {
                         })
                         $(document).foundation('accordion', 'reflow');
                         $('.userAccordion').on('toggled', function (event, accordion) {
-                           console.log(event);
                            if(!accordion.data("users")) {
                                 $(accordion).html("<img src='img/loading.gif' class='loading' id='loading' />");
                                 var encId = encodeURIComponent(accordion.parent()[0].id);

@@ -8,7 +8,7 @@ $admin_uname = trim($_POST['aname']);
 $admin_pwd = trim($_POST['apwd']);
 try {
     $adminObj = new Admin($admin_uname, $admin_pwd);
-    $result = $adminObj -> getAllGroups();
+    $result = $adminObj -> getAllBaseGroups();
     if (!$result){
         $response = array('success' => false, 'errors' => array($result));
     } else {

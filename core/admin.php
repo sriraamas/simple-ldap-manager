@@ -108,10 +108,10 @@ class Admin extends User {
         return $status;
     }
 
-    public function getAllGroups(){
+    public function getAllBaseGroups(){
         $ldapObj = new Lucid_LDAP($this->configFile);
         $ldapObj -> bind($this->username, $this->password);
-        $result = $ldapObj -> searchGroups("(cn=*)");
+        $result = $ldapObj -> searchGroups("(cn=*)",getConfig("baseGroupDn"));
         $ldapObj -> destroy();
         return $result;
     }

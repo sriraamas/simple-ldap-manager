@@ -42,7 +42,7 @@ include("topnav.phtml")
   <p class="sectionHead">Change Password</p>
     <div class="row">
       <div class="large-6 small-12 push-1 columns">
-        <label for="uname">Username
+        <label class="required" for="uname">Username
           <input type="text" required name="uname" tabindex="3" id="uname" />
         </label>
         <small class="error">Username cannot be empty!</small>
@@ -50,7 +50,7 @@ include("topnav.phtml")
     </div>
     <div class="row">
       <div class="large-6 small-12 push-1 columns">
-        <label for="pwd">Old Password
+        <label class="required" for="pwd">Old Password
           <input name = "pwd" required id="pwd"  tabindex="4" type="password" />
         </label>
         <small class="error">Password Cannot be Empty</small>
@@ -58,23 +58,30 @@ include("topnav.phtml")
     </div>
     <div class="row">
       <div class="large-6 small-12 push-1 columns">
-        <label for="newPwd">New Password
-          <input id="newPwd" required name ="newPwd" tabindex="5" data-abide-validator="isStrong" type="password" />
+        <label class="required" for="newPwd">New Password
+          <input id="newPwd" required name ="newPwd" tabindex="5" type="password" />
         </label>
-        <small class="error">New Password must have a minimum length of 8 characters.</small>
+        <small class="error">New Password cannot be blank</small>
       </div>
       <div class="large-5 small-12 columns">
         <br>
         <div class="help">
         <!-- <a href="#" tabindex="8" > Password Help </a> -->
-        <span data-tooltip aria-haspopup="true" class="has-tip" data-options="show_on:large" title="Password must have 8-characters minimum.">
-        Password Help</span>
+        <?php
+        require_once("core/util.php");
+        $help = getConfig("pwdHelp");
+        foreach($help as &$h){
+          $h = "<li>".$h."</li>";
+        }
+        $helpText = "<ul>".implode($help)."</ul>";
+        echo "<span data-tooltip aria-haspopup='true' class='has-tip' data-options='show_on:large' title='$helpText'>Password Help</span>";
+        ?>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="large-6 small-12 push-1 columns">
-        <label for="cnfNewPwd">Confirm New Password
+        <label class="required" for="cnfNewPwd">Confirm New Password
           <input id="cnfNewPwd" required name ="cnfNewPwd" tabindex="6" data-equalto="newPwd" type="password" />
         </label>
         <small class="error">Passwords Must match!</small>
@@ -83,6 +90,8 @@ include("topnav.phtml")
      <div class="row">
       <div class="large-6 small-12 push-1 columns">
     <input type="submit" value="Change" tabindex="7" class="button mybutton radius "/>
+      <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
+
     </div>
   </form>
   </div>
