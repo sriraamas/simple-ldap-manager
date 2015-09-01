@@ -12,7 +12,7 @@ class User {
     public function __construct($username, $password){
         $this -> username = $username;
         $this -> password = $password;
-        $this -> loggerObj = new Logger();
+        $this -> loggerObj = new Logger(getConfig("logPath"));
     }
     public function isAuthorized(){
         $ldapObj = new Lucid_LDAP($this->configFile);
@@ -62,19 +62,20 @@ class User {
     }
 
     public function genMyVpnKeys(){
+        $tmpPath = getConfig("tmpPath");
         $result = $this->getMyAttributes(array("cn","mail"));
         $this -> loggerObj -> log( "Regenerating VPN Credentials for $this->username");
         $zip = new ZipArchive();
-        $zipFilename = "$this->username.vpn.credentials.zip";
-        $status = $zip -> open($zipFilename, ZipArchive::OVERWRITE);
+        $zipFilename = "$tmpPath/$this->username.vpn.credentials.zip";
+        $status = $zip -> open("$zipFilename", ZipArchive::OVERWRITE);
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        list ($cert,$pub,$priv) = generateSslKeypair($result["cn"][0],$result["mail"][0],2048);
+        list ($cert,$priv) = generateSslKeypair($result["cn"][0],$result["mail"][0],2048);
         $zip -> addFromString("client.key", $priv);
         $zip -> addFromString("client.crt", $cert);
         $status = $zip -> close();
-        $updateStatus = $this -> updateMyProperty("VPN", $pub);
+        $updateStatus = $this -> updateMyProperty("VPN", $cert);
         if(!$updateStatus){
             unlink($zipFilename);
             throw new Exception("Error occured during LDAP Update. Please try again Later!");
@@ -109,32 +110,33 @@ class User {
     }
 
     public function genMySshKeys($passphrase){
+        $tmpPath = getConfig("tmpPath");
         $this -> isAuthorized();
         $this -> loggerObj -> log( "Regenerating SSH Credentials for $this->username");
-        if(!!file_exists("$this->username.pem")){
-            unlink("$this->username.pem.pub");
-            unlink("$this->username.pem");
+        if(!!file_exists("$tmpPath/$this->username.pem")){
+            unlink("$tmpPath/$this->username.pem.pub");
+            unlink("$tmpPath/$this->username.pem");
         }
-        $cmd = "ssh-keygen -q -b 2048 -t rsa -N $passphrase -C '$this->username lucid account' -f $this->username.pem";
+        $cmd = "ssh-keygen -q -b 2048 -t rsa -N $passphrase -C '$this->username lucid account' -f $tmpPath/$this->username.pem";
         system(escapeshellcmd($cmd), $cmd_status);
         if(!!$cmd_status){
             throw new Exception("SSH Key Generation Failed:$cmd_status");
         }
         $zip = new ZipArchive();
-        $zipFilename = "$this->username.ssh.credentials.zip";
+        $zipFilename = "$tmpPath/$this->username.ssh.credentials.zip";
         $zipStatus = $zip -> open($zipFilename,ZipArchive::OVERWRITE);
         if ($zipStatus!== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        $zip -> addFile("$this->username.pem.pub");
-        $zip -> addFile("$this->username.pem");
+        $zip -> addFile("$tmpPath/$this->username.pem.pub","$this->username.pem.pub");
+        $zip -> addFile("$tmpPath/$this->username.pem","$this->username.pem");
         $closeStatus = $zip->close();
         if(!$closeStatus){
             throw new Exception("Error Creating a zip archive. Try again Later");
         }
-        $pubKey = file_get_contents("$this->username.pem.pub");
-        unlink("$this->username.pem.pub");
-        unlink("$this->username.pem");
+        $pubKey = file_get_contents("$tmpPath/$this->username.pem.pub");
+        unlink("$tmpPath/$this->username.pem.pub");
+        unlink("$tmpPath/$this->username.pem");
         $updateStatus = $this -> updateMyProperty("SSH", $pubKey);
         if(!$updateStatus){
             unlink($zipFilename);

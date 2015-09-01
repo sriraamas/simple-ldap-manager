@@ -12,19 +12,19 @@ class Lucid_LDAP {
             throw new Exception("No Config file found");
         $this -> domain = $config["domain"];
         $this -> basedn = $config["basedn"];
-        $this -> mailDomain = $config["mail.domain"];
+        $this -> userdn = ldap_escape("ou=users,ou=people,$this->basedn");
+        $this -> groupdn = ldap_escape("ou=groups,$this->basedn");
         $this -> conn = FALSE;
-        $this -> logger = new Logger();
+        $this -> logger = new Logger($config["logPath"]);
         $this -> url = $config['hostname'].":".$config['port'];
         $this -> VPN = $config['vpn'];
         $this -> SSH = $config['ssh'];
-
+        $this -> tmpPath = $config['tmpPath'];
     }
 
     public function bind($username, $password){
         $this -> conn = ldap_connect($this -> url);
-        $domain = $this-> domain;
-        $rdn = "$username@$domain";
+        $rdn = "$username@$this->domain";
         $status = ldap_bind($this -> conn, $rdn, $password);
         if(!$status){
             $this -> logger -> log("Lucid_LDAP::error::$username login failed.");
@@ -38,11 +38,10 @@ class Lucid_LDAP {
         if(!$this -> conn){
             throw new ADNotBoundException();
         }
-        $userDn = ldap_escape("OU=Users,OU=People,".$this -> basedn);
         $eUserName = ldap_escape($username);
-        $entries = ldap_search($this -> conn, $userDn,"(sAMAccountName=$eUserName)", $attr);
+        $entries = ldap_search($this -> conn, $this->userdn,"(sAMAccountName=$eUserName)", $attr);
         $count = ldap_count_entries($this -> conn, $entries);
-        $this -> logger -> log("Lucid_LDAP::info::LDAP Search Complete for $username, found $count entries");
+        $this -> logger -> log("Lucid_LDAP::info::LDAP Search Complete for '$eUserName', found $count entries");
         if($count > 0){
             $entry = ldap_first_entry($this -> conn, $entries);
             $dn = ldap_get_dn($this -> conn,$entry);
@@ -57,8 +56,7 @@ class Lucid_LDAP {
             throw new ADNotBoundException();
         }
         $results = array();
-        $userDn = ldap_escape("OU=Users,OU=People,".$this -> basedn);
-        $entries = ldap_search($this -> conn, $userDn, $filter,array("givenName","middleName","sn", "sAMAccountName","sn","memberOf","mobile","mail","homePhone","userAccountControl"));
+        $entries = ldap_search($this -> conn, $this->userdn, $filter,array("givenName","middleName","sn", "sAMAccountName","sn","memberOf","mobile","mail","homePhone","userAccountControl"));
         $count = ldap_count_entries($this -> conn, $entries);
         $this -> logger -> log("Lucid_LDAP::info::LDAP Search Complete for filter $filter, found $count entries");
         if($count > 0){
@@ -132,7 +130,7 @@ class Lucid_LDAP {
 
     public function searchGroups($filter){
         $groups = array();
-        $results = ldap_search($this->conn,ldap_escape("OU=Groups,".$this->basedn),$filter,array("sAMAccountName", "cn", "member"));
+        $results = ldap_search($this->conn, $this->groupdn, $filter, array("sAMAccountName", "cn", "member"));
         $count = ldap_count_entries($this->conn, $results);
         if($count == 0) {
             throw new EntryNotFoundException($filter);
@@ -153,7 +151,7 @@ class Lucid_LDAP {
     public function getUsersinGroup($groupDn){
         $users = array();
         $cn = ldap_explode_dn($groupDn,0)[0];
-        $results = ldap_search($this->conn,"OU=Users,OU=People,".$this->basedn, "(memberof:1.2.840.113556.1.4.1941:=$groupDn)",array("cn"));
+        $results = ldap_search($this->conn, $this->userdn, "(memberof:1.2.840.113556.1.4.1941:=$groupDn)",array("cn"));
         $count = ldap_count_entries($this->conn,$results);
         if ($count > 0){
             $entry = ldap_first_entry($this->conn,$results);

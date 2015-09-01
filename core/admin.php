@@ -64,24 +64,19 @@ class Admin extends User {
     }
 
     //Returns the status of creating the user with given attributes
-    public function createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phType, $ph){
+    public function createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phType, $ph, $domain){
         $ldapObj = new Lucid_LDAP($this->configFile);
-        // Use middle name in commonName 
-        if(!empty($mn)){
-            $cn = "$fn $mn $ln";
-        } else {
-            $cn = "$fn $ln";
-        }
+        // Use sAMAccountName in commonName 
         $newEntry = array(
             'givenName'  => $fn,
             'sn'         => $ln,
-            'cn'         => $cn,
-            'name'       => $cn,
-            'displayName'=> $cn,
+            'cn'         => $uname,
+            'name'       => "$fn $ln",
+            'displayName'=> "$fn $ln",
             'objectClass'=> array( "top", "person", "organizationalPerson", "user"),
             'objectCategory' => "CN=Person,CN=Schema,CN=Configuration,".$ldapObj -> basedn,
             'sAMAccountName' => $uname,
-            'mail'           => "$uname@".$ldapObj -> mailDomain,
+            'mail'           => "$uname@$domain",
             'userAccountControl' => 512,
             'unicodePwd' => adifyPw($pwd)
         );
@@ -94,7 +89,7 @@ class Admin extends User {
             $newEntry['mobile'] = $ph;
         }
         // The DN for the new user
-        $dn = ldap_escape("CN=".$newEntry['cn'].",OU=Users,OU=People,".$ldapObj->basedn);
+        $dn = ldap_escape("cn=$uname,").$ldapObj->userdn;
         $ldapObj -> bind($this->username, $this->password);
         $status = $ldapObj -> addEntry($dn,$newEntry);
         if(!empty($groups)){

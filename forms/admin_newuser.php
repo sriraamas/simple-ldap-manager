@@ -47,6 +47,22 @@
         </div>
       </div>
       <div class="row">
+        <div class="large-4 small-6 push-1 columns">
+          <label  class="required">Email Domain
+            <select id="domain" name="domain" required >
+            <?php
+            require_once("core/util.php");
+            $domains = getConfig("mail.domain");
+            foreach($domains as $domain){
+              echo "<option  value='$domain'>$domain</option>";
+            }
+            ?>
+            </select>
+          </label>
+          <small class="error"> Domain cannot be blank!</small>
+        </div>
+      </div>
+      <div class="row">
         <div class="large-6 small-8 push-1 columns">
         <label class="required"> PhoneNumber</label>
           <div class="row collapse">
@@ -62,8 +78,6 @@
         </div>
       </div>
       </div>
-
-      
      <!-- <input id="confirm" type="hidden" name="confirm" value="false"> -->
       <div class="row">
         <div class="large-4 small-6 push-1 columns">
