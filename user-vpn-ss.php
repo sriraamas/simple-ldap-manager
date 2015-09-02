@@ -45,7 +45,7 @@ include("topnav.phtml")
  <p class="sectionHead">Regenerate VPN Credentials</p>
       <div class="row">
         <div class="large-4 small-2 push-1 columns">
-          <label>Username
+          <label  class="required" for="uname">Username
             <input type="text" name="uname" required id="uname" />
           </label>
           <small class="error"> Username cannot be blank!</small>
@@ -53,7 +53,7 @@ include("topnav.phtml")
       </div>
       <div class="row">
         <div class="large-4 small-2 push-1 columns">
-          <label>Password
+          <label  class="required" for="pwd">Password
             <input id="pwd" name="pwd" required type="password" />
           </label>
           <small class="error"> Password cannot be blank!</small>
@@ -62,6 +62,8 @@ include("topnav.phtml")
       <div class="row">
         <div class="large-4 small-2 push-1 columns">
           <input type="submit" value="Regenerate" class="button radius mybutton"/>
+                    <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
+
         </div>
       </div>
 </form>

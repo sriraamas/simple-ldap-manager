@@ -55,14 +55,45 @@ function generateSslKeypair( $commonName, $mail, $keyLength){
   return(array($clientCert,$privateKey));
 }
 
-//Returns Random password of $len
-function randomPassword($len) {
-    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+//Returns Random password of $len with $complexity(default : 3)
+// complexity 1 : just lowercase letters
+// complexity 2 : atleast one lowercase + atleast one uppercase
+// complexity 3 : atleast one lowercase + atleast one uppercase + atleast one number
+// complexity 4 : atleast one lowercase + atleast one uppercase + atleast one number + atleast one special char
+function randomPassword($len,$complexity=3) {
+    $lowerCase = "abcdefghijklmnopqrstuvwxyz";
+    $allChars = $lowerCase;
     $pass = array(); //remember to declare $pass as an array
-    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-    for ($i = 0; $i < $len; $i++) {
-        $n = rand(0, $alphaLength);
-        $pass[] = $alphabet[$n];
+    $origComplexity = $complexity;
+    if($complexity > 0){
+      $n = rand(0, 25);
+      $pass[] = $lowerCase[$n];
+      $complexity -= 1;
+    }
+    if($complexity > 0){
+      $upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      $n = rand(0, 25);
+      $pass[] = $upperCase[$n];
+      $complexity -= 1;
+      $allChars .= $upperCase;
+    }
+    if ($complexity > 0){
+      $numbers = "0123456789";
+      $n = rand(0, 9);
+      $pass[] = $numbers[$n];
+      $complexity -= 1;
+      $allChars .= $numbers;
+    }
+    if ($complexity > 0){
+      $specialChars = getConfig("specialChars");
+      $n = rand(0, strlen($specialChars) - 1);
+      $pass[] = $specialChars[$n];
+      $complexity -= 1;
+    }
+    $allCharsLength = strlen($allChars) - 1;
+    for ($i = 0; $i < $len-$origComplexity; $i++) {
+        $n = rand(0, $allCharsLength);
+        $pass[] = $allChars[$n];
     }
     return implode($pass); //turn the array into a string
 }

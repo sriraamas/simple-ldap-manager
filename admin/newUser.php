@@ -18,8 +18,8 @@ $domain = $_POST['domain'];
 try {
     $adminObj = new Admin($admin_uname, $admin_pwd);
     if($adminObj->isUnique($uname)){
-        $pwd = randomPassword(8);
-        $status = $adminObj -> createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phoneType, $ph,$domain);
+        $pwd = randomPassword(10,getConfig("pwdComplexity"));
+        $status = $adminObj -> createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phoneType, $ph, $domain);
         if ($status === true){
             $response = array('success' => true, 'data' => array("username" => $uname, "password" => $pwd) ,'errors' => array() );
         } else {

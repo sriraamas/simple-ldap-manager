@@ -128,9 +128,11 @@ class Lucid_LDAP {
         return $status;
     }
 
-    public function searchGroups($filter){
+    public function searchGroups($filter,$groupDn=NULL){
         $groups = array();
-        $results = ldap_search($this->conn, $this->groupdn, $filter, array("sAMAccountName", "cn", "member"));
+        if(!$groupDn)
+            $groupDn = $this->groupdn;
+        $results = ldap_search($this->conn, $groupDn , $filter, array("sAMAccountName", "cn", "member"));
         $count = ldap_count_entries($this->conn, $results);
         if($count == 0) {
             throw new EntryNotFoundException($filter);

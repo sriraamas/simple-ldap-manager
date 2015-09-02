@@ -43,7 +43,7 @@ include("topnav.phtml")
  <p class="sectionHead">Regenerate SSH Credentials</p>
       <div class="row">
         <div class="large-4 small-4 push-1 columns">
-          <label>Username
+          <label class="required" for="uname">Username
             <input type="text" name="uname" required  id="uname" />
           </label>
           <small class="error"> Username cannot be blank!</small>
@@ -51,7 +51,7 @@ include("topnav.phtml")
       </div>
       <div class="row">
         <div class="large-4  small-4 push-1  columns">
-          <label>Password
+          <label class="required" for="pwd">Password
             <input id="pwd" name = "pwd" required type="password" />
           </label>
           <small class="error"> Password cannot be blank!</small>
@@ -59,7 +59,7 @@ include("topnav.phtml")
       </div>
       <div class="row">
         <div class="large-4  small-4 push-1  columns">
-          <label>Passphrase
+          <label  class="required" for="passphrase">Passphrase
             <input id="passphrase" name="passphrase" required type="password" />
           </label>
           <small class="error"> Passphrase cannot be blank! Must have length >= 8 </small>
@@ -67,7 +67,7 @@ include("topnav.phtml")
       </div>
       <div class="row">
         <div class="large-4  small-4 push-1  columns">
-          <label>Confirm Passphrase
+          <label class="required" for="cnfPassphrase">Confirm Passphrase
             <input id="cnfPassphrase" name ="cnfPassphrase" required data-equalto="passphrase" type="password" />
           </label>
           <small class="error"> Passphrase doesn't match! </small>
@@ -76,6 +76,8 @@ include("topnav.phtml")
       <div class="row">
         <div class="large-4  small-4 push-1  columns">
           <input type="submit" value="Regenerate" class="radius button mybutton"/>
+                    <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
+
         </div>
       </div>
     </form>

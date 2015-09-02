@@ -84,7 +84,7 @@
           <input type="submit" value="Create New User" class="button radius mybutton"/>
         </div>
         <div class="large-2 small-2 pull-6 columns">
-          <img src="img/loading.gif" id="loading" style="display:none;"/>
+          <img src="/img/loading.gif" id="loading" style="display:none;"/>
         </div>
       </div>
       </div>
