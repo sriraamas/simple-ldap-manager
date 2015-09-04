@@ -328,9 +328,10 @@ var handlers = {
                         })
                         $(document).foundation('accordion', 'reflow');
                         $('.userAccordion').on('toggled', function (event, accordion) {
-                           if(!accordion.data("users")) {
+                            var groupId = accordion.parent()[0].id;
+                            if(!$("#"+groupId+"Users").data("users")) {
                                 $(accordion).html("<img src='/img/loading.gif' class='loading' id='loading' />");
-                                var encId = encodeURIComponent(accordion.parent()[0].id);
+                                var encId = encodeURIComponent(groupId);
                                 var token = utils.getCookie("xsrftoken");
                                 var query = $.post("/admin/getUsersInGroup.php",
                                 $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId + "&xsrftoken=" + token,
@@ -349,7 +350,7 @@ var handlers = {
                                             str = "No Users";
                                         }
                                         $(accordion).html(str);
-                                        accordion.data("users",true);
+                                       $("#"+groupId+"Users").data("users",true);
                                     } else {
                                         $(accordion).html("<span class='text-center' style='color:red'>"+data["errors"][0] + "</span>");
                                     }

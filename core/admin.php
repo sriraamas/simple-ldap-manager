@@ -139,7 +139,7 @@ class Admin extends User {
     }
 
     public function isValid($uname){
-        return preg_match("/^([a-zA-Z]+[a-zA-Z0-9]*)$/",trim($uname));
+        return preg_match("/^([a-zA-Z0-9]+[ a-zA-Z0-9-_.]*)$/",trim($uname));
     }
 
     public function getUsersInGroup($uname){
