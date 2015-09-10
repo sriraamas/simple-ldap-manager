@@ -18,7 +18,7 @@ try{
         $value = ldap_escape(trim($matches[1]));
         $filter = "(|(sAMAccountName=$value*)(givenName=$value*)(sn=$value*))";
     } else {
-        throw new Exception("Invalid Search Query '$userQ'.Search query must start with alphanumeric character and can contain letters,digits,dashes ,periods and underscores only!"");
+        throw new Exception("Invalid Search Query '$userQ'.Search query must start with alphanumeric character and can contain letters, digits, dashes, periods and underscores only!");
     }
     $results = $adminObj -> searchUsers($filter);
     $response = array('success' => true, 'data' => $results, 'errors' => array() );
