@@ -63,7 +63,7 @@ class User {
 
     public function genMyVpnKeys(){
         $tmpPath = getConfig("tmpPath");
-        $result = $this->getMyAttributes(array("cn","mail"));
+        $result = $this->getMyAttributes(array("cn","mail","sAMAccountName"));
         $this -> loggerObj -> log( "Regenerating VPN Credentials for $this->username");
         $zip = new ZipArchive();
         $zipFilename = "$tmpPath/$this->username.vpn.credentials.zip";
@@ -71,7 +71,7 @@ class User {
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        list ($cert,$priv) = generateSslKeypair($result["cn"][0],$result["mail"][0],2048);
+        list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0],2048);
         $zip -> addFromString("client.key", $priv);
         $zip -> addFromString("client.crt", $cert);
         $status = $zip -> close();
