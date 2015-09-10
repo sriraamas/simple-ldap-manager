@@ -71,7 +71,7 @@ class User {
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0],2048);
+        list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0],getConfig("vpnKeyLength"));
         $zip -> addFromString("client.key", $priv);
         $zip -> addFromString("client.crt", $cert);
         $status = $zip -> close();
@@ -117,7 +117,8 @@ class User {
             unlink("$tmpPath/$this->username.pem.pub");
             unlink("$tmpPath/$this->username.pem");
         }
-        $cmd = "ssh-keygen -q -b 2048 -t rsa -N $passphrase -C '$this->username lucid account' -f $tmpPath/$this->username.pem";
+        $keyLength = getConfig("sshKeyLength");
+        $cmd = "ssh-keygen -q -b $keyLength -t rsa -N $passphrase -C '$this->username lucid account' -f $tmpPath/$this->username.pem";
         system(escapeshellcmd($cmd), $cmd_status);
         if(!!$cmd_status){
             throw new Exception("SSH Key Generation Failed:$cmd_status");
