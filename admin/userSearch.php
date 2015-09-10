@@ -9,7 +9,7 @@ $apwd = trim($_POST['apwd']);
 $adminObj = new Admin($aname, $apwd);
 $userQ = $_POST['userQuery'];
 try{
-    $valuePattern = "[ ]*([a-zA-Z0-9]+[ a-zA-Z0-9]*)[ ]*";
+    $valuePattern = "[ ]*([a-zA-Z0-9]+[ a-zA-Z0-9-_.]*)[ ]*";
     if(preg_match("/^[ ]*(sn|givenName|sAMAccountName)[ ]*:$valuePattern$/", $userQ,$matches)){
         $field = $matches[1];
         $value = ldap_escape(trim($matches[2]));
@@ -18,7 +18,7 @@ try{
         $value = ldap_escape(trim($matches[1]));
         $filter = "(|(sAMAccountName=$value*)(givenName=$value*)(sn=$value*))";
     } else {
-        throw new Exception("Invalid Search Query '$userQ'");
+        throw new Exception("Invalid Search Query '$userQ'.Search query must start with alphanumeric character and can contain letters,digits,dashes ,periods and underscores only!"");
     }
     $results = $adminObj -> searchUsers($filter);
     $response = array('success' => true, 'data' => $results, 'errors' => array() );

@@ -9,12 +9,12 @@ $apwd = trim($_POST['apwd']);
 $adminObj = new Admin($aname, $apwd);
 $groupQuery = $_POST['groupQuery'];
 try{
-    $valuePattern = "[ ]*([a-zA-Z0-9]+[ a-zA-Z0-9]*)[ ]*";
+    $valuePattern = "[ ]*([a-zA-Z0-9]+[ a-zA-Z0-9-_]*)[ ]*";
     if(preg_match("/^$valuePattern$/",$groupQuery,$matches)){
         $value = ldap_escape(trim($matches[1]));
         $filter = "(|(sAMAccountName=$value*)(sn=$value*)(givenName=$value*))";
     } else {
-        throw new Exception("Invalid Search Query '$groupQuery'");
+        throw new Exception("Invalid Search Query '$groupQuery'. Search query must start with alphanumeric character and can contain letters,digits,dashes and underscores only!");
     }
     $results = $adminObj -> searchGroups($filter);
     $response = array('success' => true, 'data' => $results, 'errors' => array() );

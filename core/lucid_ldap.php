@@ -140,7 +140,6 @@ class Lucid_LDAP {
         $entry = ldap_first_entry($this->conn, $results);
         do {
             $dn = ldap_get_dn($this->conn, $entry);
-            $encDn = urlencode($dn);
             $groupName = $this->getFirstValue( $entry, "sAMAccountName");
             array_push($groups, array(
                 "sAMAccountName" => $groupName,
@@ -152,7 +151,6 @@ class Lucid_LDAP {
     }
     public function getUsersinGroup($groupDn){
         $users = array();
-        $cn = ldap_explode_dn($groupDn,0)[0];
         $results = ldap_search($this->conn, $this->userdn, "(memberof:1.2.840.113556.1.4.1941:=$groupDn)",array("cn"));
         $count = ldap_count_entries($this->conn,$results);
         if ($count > 0){
