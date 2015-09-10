@@ -1,0 +1,7 @@
+Architecture: all
+Description: A simple LDAP manager
+Homepage: https://github.com/lucidsoftware/simple-ldap-manager
+Maintainer: Lucid Software <ops@lucidchart.com>
+Package: simple-ldap-manager
+Version: <?=getenv('VERSION')?>
+
