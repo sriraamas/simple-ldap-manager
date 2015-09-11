@@ -97,6 +97,26 @@ function randomPassword($len,$complexity=3) {
     }
     return implode($pass); //turn the array into a string
 }
+  //Zips all the files and folders in $folder, using relative path. NOT TESTED WITH LINKS
+  function zipFolder($zipArchive, $folder, $basePath=null){
+    if(!is_dir($folder)){
+        return(-1);
+    }
+    $entries = array_diff(scandir($folder), array('..', '.'));
+    foreach ($entries as $f){
+        $absFilePath = "$folder/$f";
+        if($basePath){
+            $newBasePath = $basePath."/".$f;
+        } else {
+            $newBasePath = $f;
+        }
+        if(is_dir($absFilePath)){
+            zipFolder($zipArchive, $absFilePath, $newBasePath);
+        } else {
+            $zipArchive -> addFile($absFilePath, $newBasePath);
+        }
+    }
+  }
 
 //Returns textual status of the account
 function getAccountStatus($num) {
