@@ -71,9 +71,17 @@ class User {
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0],getConfig("vpnKeyLength"));
+        list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0], intval(getConfig("vpnKeyLength")));
         $zip -> addFromString("client.key", $priv);
         $zip -> addFromString("client.crt", $cert);
+        $vpnFolder = getConfig("vpnFolderPath");
+        // fails to generate credentials wihen folder doesn't exist
+        if(file_exists($vpnFolder)){
+            zipFolder($zip,$vpnFolder);
+        }
+        else {
+            throw new Exception("VPN Container is Not Found. Kindly contact the server administrator!")
+        }
         $status = $zip -> close();
         $updateStatus = $this -> updateMyProperty("VPN", $cert);
         if(!$updateStatus){
@@ -83,6 +91,7 @@ class User {
         $this -> loggerObj -> log( "VPN Credentials for $this->username have been reset successfully");
         return($zipFilename);
     }
+
     public function getMyAttributes($attrs){
         $ldapObj = new Lucid_LDAP($this->configFile);
         $ldapObj -> bind($this->username, $this->password);
