@@ -109,9 +109,9 @@ class Lucid_LDAP {
     }
 
     // bind happens in external function
-    public function delAttribute($dn,$attrib){
+    public function delAttribute($dn,$attrib,$value=array()){
         $arr = array();
-        $arr[$attrib] = array();
+        $arr[$attrib] = $value;
         $status = ldap_mod_del($this->conn, $dn, $arr);
         if (!$status){
             $status = ldap_error($this->conn);
@@ -172,7 +172,7 @@ class Lucid_LDAP {
         }
     }
 
-    private function getAllValues($entry,$attrib,$attrib){
+    public function getAllValues($entry,$attrib){
         $results = array();
         $values = @ldap_get_values($this->conn, $entry,$attrib);
         if(!empty($values)){

@@ -35,7 +35,14 @@ var utils = {
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 str += "<tr>";
-                str += "<th> " +key+"</th> <td>"+data[key]  + "</td>";
+                str += "<th> " +key+"</th>";
+		if(data[key].hasOwnProperty("count")){
+                    str += "<td><ul>"
+                    for(var i=0;i<data[key]["count"];i++)
+                        str += "<li>" + data[key][i] +"</li>"
+                    str += "</ul></td>"
+                } else
+		    str += "<td>"+data[key]  + "</td>";
                 str += "</tr>";
             }
         }
@@ -88,7 +95,16 @@ var utils = {
         temp += "</form>"
         return temp;
     },
-
+    editGroupFormHtml: function(data){
+        var temp = "<form id='editGroups'>";
+        for (var i=0;i < data.length;i++){
+            temp += "<div class='row'>";
+            temp += "<input id='checkbox"+i+"' name='groups[]' value='"+data[i]["dn"]+"' type='checkbox'><label for='checkbox"+i+"'>"+data[i]["sAMAccountName"]+"</label>"
+            temp += "</div>";
+        }
+        temp += "</form>"
+        return temp;
+    },
     getBlob : function(contents){
         var decoded = atob(contents);
         var decodedArr = new Array(decoded.length);
