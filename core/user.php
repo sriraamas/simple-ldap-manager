@@ -80,7 +80,7 @@ class User {
             zipFolder($zip,$vpnFolder);
         }
         else {
-            throw new Exception("VPN Container is Not Found. Kindly contact the server administrator!")
+            throw new Exception("VPN Container is Not Found. Kindly contact the server administrator!");
         }
         $status = $zip -> close();
         $updateStatus = $this -> updateMyProperty("VPN", $cert);
