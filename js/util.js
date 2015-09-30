@@ -36,13 +36,13 @@ var utils = {
             if (data.hasOwnProperty(key)) {
                 str += "<tr>";
                 str += "<th> " +key+"</th>";
-		if(data[key].hasOwnProperty("count")){
+                if($.isArray(data[key])){
                     str += "<td><ul>"
-                    for(var i=0;i<data[key]["count"];i++)
+                    for(var i=0;i<data[key].length;i++)
                         str += "<li>" + data[key][i] +"</li>"
                     str += "</ul></td>"
                 } else
-		    str += "<td>"+data[key]  + "</td>";
+            str += "<td>"+data[key]  + "</td>";
                 str += "</tr>";
             }
         }
@@ -86,6 +86,7 @@ var utils = {
         return temp;
     },
     getGroupFormHtml: function(data){
+        data = data.sort(function(str1, str2){ return str1["sAMAccountName"].localeCompare(str2["sAMAccountName"])});
         var temp = "<form id='groupSelect'>";
         for (var i=0;i < data.length;i++){
             temp += "<div class='row'>";
@@ -96,6 +97,7 @@ var utils = {
         return temp;
     },
     editGroupFormHtml: function(data){
+        data = data.sort(function(str1, str2){ return str1["sAMAccountName"].localeCompare(str2["sAMAccountName"])});
         var temp = "<form id='editGroups'>";
         for (var i=0;i < data.length;i++){
             temp += "<div class='row'>";
