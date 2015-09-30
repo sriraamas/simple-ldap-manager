@@ -23,6 +23,9 @@ try{
              case "enable":
                             $result = $adminObj -> updateAttr($_POST['dn'],"userAccountControl",ADUserAccountStatus::Enabled);
                             break;
+	     case "editGroups":
+                            $result = $adminObj -> updateGroups($username, $_POST['groups']);
+                            break;
              default:
                             throw new Exception("Invalid Action");
         }
@@ -36,7 +39,7 @@ try{
         if($username === $admin_uname){
             throw new Exception("Error: You Cannot Manage Yourself!");
         }
-        $info = $adminObj -> getUserInfo($username,array("userAccountControl"));
+        $info = $adminObj -> getUserInfo($username,array("userAccountControl","memberOf"));
         $response = array('success' => true, 'data' => $info, 'errors' => array() );
     }
 }
