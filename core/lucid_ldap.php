@@ -181,7 +181,7 @@ class Lucid_LDAP {
             }
             natsort($results);
         }
-        return $results;
+        return array_values($results);
     }
 
     private function getAllGroupNames($entry,$attrib){
