@@ -166,9 +166,9 @@ var handlers = {
                         var button2 = " <button id='button2' onclick='handlers.admin.action.manageUser.confirm(this)' value='revokeSSH'> Revoke SSH</button>";
                         var button3 = " <button id='button3' onclick='handlers.admin.action.manageUser.confirm(this)' value='disable'> Disable</button>";
                         var button4 = " <button id='button4' onclick='handlers.admin.action.manageUser.confirm(this)' value='enable'> Enable</button>";
-                        var button5 = " <button id='button5' onclick='handlers.admin.action.manageUser.editGroups()' value='editGroups'>Change Group Membership</button>";
+                        var button5 = " <button id='button5' onclick='handlers.admin.action.manageUser.editGroups()' value='editGroups'>Change Teams</button>";
 
-			var confirmButton = button1 + button2 + button3 + button4+button5;
+                        var confirmButton = button1 + button2 + button3 + button4 + button5;
                         var input1 = $("<input>")
                                .attr("type", "hidden")
                                .attr("name", "dn").val(data["data"]["dn"]);
@@ -218,30 +218,28 @@ var handlers = {
                     var formDom = $("section.active form")
                     $(formDom).append($(input2));
                     var token = utils.getCookie("xsrftoken");
-                    var doneButton = " <button id='cnfedit' onclick='handlers.admin.action.manageUser.confirm3()'>Update</button>";
+                    var doneButton = " <button id='cnfedit' onclick='handlers.admin.action.manageUser.confirm3()'>Update Teams</button>";
                     $.post("/admin/getGroups.php",$(formDom).serialize() + "&xsrftoken="+token,function(data){
-                        utils.updatePrompt("Edit Groups",utils.editGroupFormHtml(data["data"]) + doneButton);
+                        utils.updatePrompt("Change Teams",utils.editGroupFormHtml(data["data"]) + doneButton);
                         var userInfo = $(formDom).data("data");
-                        if(userInfo['memberOf'].hasOwnProperty("count")){
-                            for(var i=0;i<userInfo['memberOf']['count'];i++){
-                                $(":checkbox[value='"+userInfo['memberOf'][i]+"']").prop('checked', true)
-                            }
+                        for(var i=0;i<userInfo['memberOf'].length;i++){
+                            $(":checkbox[value='"+userInfo['memberOf'][i]+"']").prop('checked', true)
                         }
                     })
 
                 },
                 confirm3: function(){
-	             var formDom = $("section.active form");
-		     var userInfo = $(formDom).data("data");
-                     $("#editGroups").find("input:checked").each(function(){
+                    var formDom = $("section.active form");
+                    var userInfo = $(formDom).data("data");
+                    $("#editGroups").find("input:checked").each(function(){
                         var input = $("<input>")
                                  .attr("type", "hidden")
                                  .attr("name", "groups[]").val($(this)[0].value);
                         $(formDom).append($(input));
                     });
-                    handlers.admin.action.manageUser.confirm2("Update Groups");
+                    handlers.admin.action.manageUser.confirm2("Team Update");
                 }
-	    },
+        },
             addUser: {
                 verify: function (data){
                     if(data["success"]){

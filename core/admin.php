@@ -34,9 +34,10 @@ class Admin extends User {
                 if ($val == "userAccountControl"){
                     $final[$val] = getAccountStatus($result[$val][0]);
                 }
-        }
-            else 
+            }
+            else {
                 $final[$val] = "";
+            }
         }
         return($final);
     }
@@ -101,29 +102,31 @@ class Admin extends User {
         return $status;
     }
 
-    public function updateGroups($username, $new){
-    $ldapObj = new Lucid_LDAP($this->configFile);
-    $ldapObj -> bind($this->username, $this->password);
-    list($entry, $dn) = $ldapObj -> searchUser($username, array("memberOf"));
-    $old = $ldapObj -> getAllValues($entry,"memberOf");
-    $toDelete = array_values(array_diff($old, $new));
-    $toAdd = array_values(array_diff($new, $old));
-    if(count($toDelete) > 0){
-        for($i=0;$i<count($toDelete);$i++){
-            $status  = $ldapObj -> delAttribute($toDelete[$i], 'member', $dn);
-            $this->loggerObj -> log("ADMIN::info::$this->username has successfully removed $username from '$toDelete[$i]' Group");
+    public function updateTeams($username, $new){
+        $ldapObj = new Lucid_LDAP($this->configFile);
+        $ldapObj -> bind($this->username, $this->password);
+        list($entry, $dn) = $ldapObj -> searchUser($username, array("memberOf"));
+        $allGroups = $ldapObj -> getAllValues($entry,"memberOf");
+        $allTeams = array_values(array_filter($allGroups, function($group) { $teamsDn = getConfig("baseGroupDn"); return preg_match("/$teamsDn/i", $group); }));
+        $toDelete = array_values(array_diff($allTeams, $new));
+        $toAdd = array_values(array_diff($new, $allTeams));
+        if(count($toDelete) > 0){
+            for($i=0;$i<count($toDelete);$i++){
+                $status  = $ldapObj -> delAttribute($toDelete[$i], 'member', $dn);
+                $this->loggerObj -> log("ADMIN::info::$this->username has successfully removed $username from '$toDelete[$i]' Group");
+            }
         }
-    }
-    if(count($toAdd) > 0){
-        $status = $this -> addUserToGroups($ldapObj, $dn, $toAdd);
-    }
-    $ldapObj -> destroy();
-    return True;
+        if(count($toAdd) > 0){
+            $status = $this -> addUserToGroups($ldapObj, $dn, $toAdd);
+        }
+        $ldapObj -> destroy();
+        return True;
     }
     // Adds user given by $dn to groups $groups
     private function addUserToGroups($ldapObj, $dn, $groups){
         for($i=0;$i<count($groups);$i++){
             $status= $ldapObj -> addAttribute($groups[$i],"member",$dn);
+            $this -> loggerObj -> log("ADMIN::info::$this->username has successfully added user '$dn' to '$groups[$i]' Group");
         }
         return $status;
     }

@@ -88,7 +88,7 @@ class Lucid_LDAP {
         list($entry, $dn) = $this -> searchUser($username, $attrs);
         $result = array();
         for ($i=0;$i<count($attrs);$i++){
-            $values = @ldap_get_values($this->conn, $entry, $attrs[$i]);
+            $values = $this -> getAllValues($entry, $attrs[$i]);
             if(empty($values)){
                throw new AttributeNotFoundException($username, $attrs[$i]);
             }
@@ -179,6 +179,7 @@ class Lucid_LDAP {
             for($i=0;$i<$values["count"];$i++){
                 array_push($results, $values[$i]);
             }
+            natsort($results);
         }
         return $results;
     }
@@ -192,6 +193,7 @@ class Lucid_LDAP {
                 array_push($results,$ar[0]);
             }
         }
+        natsort($results);
         return $results;
     }
 
