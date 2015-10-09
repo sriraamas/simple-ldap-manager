@@ -147,7 +147,7 @@ class User {
         $pubKey = file_get_contents("$tmpPath/$this->username.pem.pub");
         unlink("$tmpPath/$this->username.pem.pub");
         unlink("$tmpPath/$this->username.pem");
-        $updateStatus = $this -> updateMyProperty("SSH", $pubKey);
+        $updateStatus = $this -> updateMyProperty("SSH", trim($pubKey));
         if(!$updateStatus){
             unlink($zipFilename);
             throw new Exception("Error occured during LDAP Update. Please try again Later!");
