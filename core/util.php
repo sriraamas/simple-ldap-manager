@@ -1,4 +1,5 @@
 <?php
+
 function ldap_escape($string) {
     return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
   }
@@ -18,8 +19,25 @@ function LDAPtoTS($ldapTs) {
     return $ts;
 }
 
+function getDefaultConfPath() {
+  $val = getenv("LDAP_MGR_CONF");
+  if(!$val){
+    $val = "/etc/simple-ldap-manager";
+  }
+  return $val;
+}
+
+function getConfigFile() {
+  $default = getDefaultConfPath();
+  if(file_exists($default."/config-overrides.ini")){
+    return $default."/config-overrides.ini";
+  } else {
+    return $_SERVER["DOCUMENT_ROOT"]."/conf/config.ini";
+  }
+}
+
 function getConfig($configName) {
-    $config = parse_ini_file("config.ini");
+    $config = parse_ini_file(getConfigFile());
     if(!$config)
             throw new Exception("No Config file found");
     return $config[$configName];
@@ -33,8 +51,14 @@ abstract class ADUserAccountStatus
 
 //Returns Client Certificate and PrivateKey for a user of $commonName, $email and length $keyLength
 function generateSslKeypair( $commonName, $mail, $keyLength){
-  $key = openssl_pkey_new(array("private_key_bits" =>$keyLength));
-  $certConf = parse_ini_file("cert.conf",true);
+  $key = openssl_pkey_new(array("private_key_bits" => $keyLength));
+  $default = getDefaultConfPath();
+  if(file_exists($default."/cert-overrides.ini")){
+    $confFile = $default."/cert-overrides.ini";
+  } else {
+    $confFile = $_SERVER["DOCUMENT_ROOT"]."/conf/cert.ini";
+  }
+  $certConf = parse_ini_file($confFile,true);
   $dn = $certConf["dn"];
   $dn["commonName"] = $commonName;
   $dn["emailAddress"] = $mail;
@@ -43,7 +67,7 @@ function generateSslKeypair( $commonName, $mail, $keyLength){
     throw new Exception("Error occured:". $e["message"]);
   }
   $signed = openssl_csr_sign($cert, null, $key, $certConf["csr"]["validity_in_days"], array(
-    "config" =>  "../core/cert.conf" ,
+    "config" =>  $confFile ,
     "config_section_name" => "csr",
     "x509_extensions"  => "clientx509_ext"
   )); // Self-signed X509 certificate with SHA256 digest and extensions specified in local openssl.conf
