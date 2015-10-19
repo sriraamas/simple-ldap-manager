@@ -67,22 +67,40 @@ class User {
         $this -> loggerObj -> log( "Regenerating VPN Credentials for $this->username");
         $zip = new ZipArchive();
         $zipFilename = "$tmpPath/$this->username.vpn.credentials.zip";
+
         $status = $zip -> open("$zipFilename", ZipArchive::OVERWRITE);
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
+
         list ($cert,$priv) = generateSslKeypair($result["sAMAccountName"][0],$result["mail"][0], intval(getConfig("vpnKeyLength")));
-        $zip -> addFromString("client.key", $priv);
-        $zip -> addFromString("client.crt", $cert);
+
+        // If vpn targets are configured, put the client key and cert in each target
+        $vpnTargets = getConfig("vpnTargets");
+        if ($vpnTargets == NULL) {
+            $zip -> addFromString("client.key", $priv);
+            $zip -> addFromString("client.crt", $cert);
+        } else {
+            foreach ($vpnTargets as $target) {
+                $zip -> addFromString("$target/client.key", $priv);
+                $zip -> addFromString("$target/client.crt", $cert);
+            }
+        }
+
+        // Try to add the source vpn files
         $vpnFolder = getConfig("vpnFolderPath");
-        // fails to generate credentials wihen folder doesn't exist
         if(file_exists($vpnFolder)){
             zipFolder($zip,$vpnFolder);
         }
         else {
             throw new Exception("VPN Container is Not Found. Kindly contact the server administrator!");
         }
+
+        // Compress and save the files
         $status = $zip -> close();
+        if ($status !== TRUE){
+            throw new Exception("Cannot create Zip File");
+        }
         $updateStatus = $this -> updateMyProperty("VPN", $cert);
         if(!$updateStatus){
             unlink($zipFilename);
