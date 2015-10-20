@@ -20,9 +20,33 @@ $(window).load(function() {
     });
     $("#user-ss-topright").addClass("active");
     $("#admin-ss-topright").removeClass("active");
-    
+
 });
 
+// From http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+var b64toBlob = function(b64Data, contentType, sliceSize) {
+    contentType = contentType || '';
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+};
 
 var handlers = {
     user: {
@@ -80,7 +104,7 @@ var handlers = {
             });
 
         },
-        action : { 
+        action : {
             resetPwd: function(data){
                 if(data["success"]){
                     form.clearInputs("passForm");
@@ -92,17 +116,9 @@ var handlers = {
             genVpn: function(data){
                 if(data["success"]){
                     form.clearInputs("genVpn");
-                    if(utils.isIE()){
-                        var b = utils.getBlob(data["data"]["contents"]);
-                        window.navigator.msSaveBlob(b,data['data']['filename'])
-                        storage.contents['blob'] = b;
-                        storage.contents['filename'] = data['data']['filename'];
-                        utils.alert("success", "Your VPN Credentials should begin downloading now! If not, Click <a href='#' onclick='handlers.user.ieDownload()'> here </a>");
-                    } else {
-                        utils.alert("success", "VPN Credentials generated Successfully. They will be downloaded shortly. If it failed to download, click <a id='downId' download = '"+data["data"]["filename"] +"' href='data:application/zip;base64," + data['data']['contents'] + "'>here</a>");
-                        var dlink = document.getElementById("downId");
-                        dlink.click();
-                    }
+                    var dataBlob = b64toBlob(data["data"]["contents"], 'application/zip');
+                    saveAs(dataBlob, data["data"]["filename"])
+                    utils.alert("success", "VPN Credentials generated Successfully. They will be downloaded shortly. If it failed to download, click <a id='downId' download = '"+data["data"]["filename"] +"' href='data:application/zip;base64," + data['data']['contents'] + "'>here</a>");
                 } else {
                     utils.alert("warning", "VPN Credentials failed to generate. Reason: "+ data["errors"][0]);
                 }
@@ -111,17 +127,9 @@ var handlers = {
             genSsh: function(data){
                 if(data["success"]){
                     form.clearInputs("genSsh");
-                    if(utils.isIE()){
-                        var b = utils.getBlob(data["data"]["contents"]);
-                        window.navigator.msSaveBlob(b,data['data']['filename'])
-                        storage.contents['blob'] = b;
-                        storage.contents['filename'] = data['data']['filename'];
-                        utils.alert("success", "Your SSH Credentials should begin downloading now! If not, Click <a href='#' onclick='handlers.user.ieDownload()'> here </a>");
-                    } else {
-                        utils.alert("success", "SSH Credentials generated Successfully. They will be downloaded shortly. If it failed to download, click <a id='downId' download = '"+data["data"]["filename"] +"' href='data:application/zip;base64," + data['data']['contents'] + "'>here</a>!");
-                        var dlink = document.getElementById("downId");
-                        dlink.click();
-                    }
+                    var dataBlob = b64toBlob(data["data"]["contents"], 'application/zip');
+                    saveAs(dataBlob, data["data"]["filename"])
+                    utils.alert("success", "SSH Credentials generated Successfully. They will be downloaded shortly. If it failed to download, click <a id='downId' download = '"+data["data"]["filename"] +"' href='data:application/zip;base64," + data['data']['contents'] + "'>here</a>!");
                 } else {
                     utils.alert("warning", "SSH Credentials failed to generate. Reason: "+ data["errors"][0]);
                 }
