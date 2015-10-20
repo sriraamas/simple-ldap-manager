@@ -20,72 +20,67 @@ setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 da
 include("topnav.phtml")
 ?>
 <div>
-  <div  id="notify" class = "row">
-    
-  </div>
+  <div  id="notify" class = "row"></div>
   <div class = "large-12 small-12 columns" style="width:100%; height:100%;display:table">
-  <div class="row" >
-    <div class="sidebarDiv">
-      <ul class="tabs vertical" data-options ="deep_linking:true; scroll_to_content:false"  role="tablist" style="padding-top:2%">
-        <li class="tab-title mylogo no-hover" role="presentation"><h5><img class="logo maw-100 rs d-n_2" src="https://d2slcw3kip6qmk.cloudfront.net/marketing/logos/lucidsoftware-logo-text-194x42.png" alt="Lucid Software, Inc."></h5></li>
-        <li class="sidebar  sideHead">Self-Service</li>
-        <li class="sidebar" role="presentation"><a href="user-chpass-ss.php#panel2-1" role="tab" tabindex="0" aria-controls="panel2-1">Change Password</a></li>
-        <li class="sidebar " role="presentation"><a href="user-vpn-ss.php#panel2-2" role="tab" tabindex="1" aria-controls="panel2-2">VPN Credentials</a></li>
-        <li class="sidebar active lastitem" role="presentation"><a href="#panel2-3" role="tab" tabindex="2" aria-controls="panel2-3">SSH Credentials</a></li>
-      </ul>
-    </div>
-    <div class="large-8 small-10 columns">
-<div class="tabs-content mycontent">
-
-
-<section role="tabpanel" aria-hidden="true" class="active content" id="panel2-3">
-  <form id="genSsh" action="/user/sshgen.php" method="POST" data-abide>
- <p class="sectionHead">Regenerate SSH Credentials</p>
-      <div class="row">
-        <div class="large-4 small-4 push-1 columns">
-          <label class="required" for="uname">Username
-            <input type="text" name="uname" required  id="uname" />
-          </label>
-          <small class="error"> Username cannot be blank!</small>
+    <div class="row" >
+      <div class="sidebarDiv">
+        <ul class="tabs vertical" data-options ="deep_linking:true; scroll_to_content:false"  role="tablist" style="padding-top:2%">
+          <li class="tab-title mylogo no-hover" role="presentation"><h5><img class="logo maw-100 rs d-n_2" src="https://d2slcw3kip6qmk.cloudfront.net/marketing/logos/lucidsoftware-logo-text-194x42.png" alt="Lucid Software, Inc."></h5></li>
+          <li class="sidebar  sideHead">Self-Service</li>
+          <li class="sidebar" role="presentation"><a href="user-chpass-ss.php#panel2-1" role="tab" tabindex="0" aria-controls="panel2-1">Change Password</a></li>
+          <li class="sidebar " role="presentation"><a href="user-vpn-ss.php#panel2-2" role="tab" tabindex="1" aria-controls="panel2-2">VPN Credentials</a></li>
+          <li class="sidebar active lastitem" role="presentation"><a href="#panel2-3" role="tab" tabindex="2" aria-controls="panel2-3">SSH Credentials</a></li>
+        </ul>
+      </div>
+      <div class="large-8 small-10 columns">
+        <div class="tabs-content mycontent">
+          <section role="tabpanel" aria-hidden="true" class="active content" id="panel2-3">
+            <form id="genSsh" action="/user/sshgen.php" method="POST" data-abide>
+              <p class="sectionHead">Regenerate SSH Credentials</p>
+              <div class="row">
+                <div class="large-4 small-4 push-1 columns">
+                  <label class="required" for="uname">Username
+                    <input type="text" name="uname" required  id="uname" />
+                  </label>
+                  <small class="error"> Username cannot be blank!</small>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-4  small-4 push-1  columns">
+                  <label class="required" for="pwd">Password
+                    <input id="pwd" name = "pwd" required type="password" />
+                  </label>
+                  <small class="error"> Password cannot be blank!</small>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-4  small-4 push-1  columns">
+                  <label  class="required" for="passphrase">Passphrase
+                    <input id="passphrase" name="passphrase" required type="password" />
+                  </label>
+                  <small class="error"> Passphrase cannot be blank! Must have length >= 8 </small>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-4  small-4 push-1  columns">
+                  <label class="required" for="cnfPassphrase">Confirm Passphrase
+                    <input id="cnfPassphrase" name ="cnfPassphrase" required data-equalto="passphrase" type="password" />
+                  </label>
+                  <small class="error"> Passphrase doesn't match! </small>
+                </div>
+              </div>
+              <div class="row">
+                <div class="large-4  small-4 push-1  columns">
+                  <input type="submit" value="Regenerate" class="radius button mybutton"/>
+                  <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
+                </div>
+              </div>
+            </form>
+          </section>
         </div>
       </div>
-      <div class="row">
-        <div class="large-4  small-4 push-1  columns">
-          <label class="required" for="pwd">Password
-            <input id="pwd" name = "pwd" required type="password" />
-          </label>
-          <small class="error"> Password cannot be blank!</small>
-        </div>
-      </div>
-      <div class="row">
-        <div class="large-4  small-4 push-1  columns">
-          <label  class="required" for="passphrase">Passphrase
-            <input id="passphrase" name="passphrase" required type="password" />
-          </label>
-          <small class="error"> Passphrase cannot be blank! Must have length >= 8 </small>
-        </div>
-      </div>
-      <div class="row">
-        <div class="large-4  small-4 push-1  columns">
-          <label class="required" for="cnfPassphrase">Confirm Passphrase
-            <input id="cnfPassphrase" name ="cnfPassphrase" required data-equalto="passphrase" type="password" />
-          </label>
-          <small class="error"> Passphrase doesn't match! </small>
-        </div>
-      </div>
-      <div class="row">
-        <div class="large-4  small-4 push-1  columns">
-          <input type="submit" value="Regenerate" class="radius button mybutton"/>
-                    <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
-
-        </div>
-      </div>
-    </form>
-</section>
-</div> 
     </div>
   </div>
-</div>
 </div>
 
 <footer class="row">
