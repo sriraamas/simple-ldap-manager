@@ -101,6 +101,7 @@ include("topnav.phtml")
 </footer>
 <!-- <script src="js/vendor//zepto.js"></script> -->
 <script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/FileSaver.js"></script>
 <script src="js/foundation.min.js"></script>
 <script src="js/util.js"></script>
 <script src="js/form.js"></script>
