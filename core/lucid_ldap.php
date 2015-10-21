@@ -12,7 +12,8 @@ class Lucid_LDAP {
             throw new Exception("No Config file found");
         $this -> domain = $config["domain"];
         $this -> basedn = $config["basedn"];
-        $this -> userdn = ldap_escape("ou=users,ou=people,$this->basedn");
+        $this -> userBaseDn = $config["userDn"];
+        $this -> userdn = ldap_escape("$this->userBaseDn,$this->basedn");
         $this -> groupdn = ldap_escape("ou=groups,$this->basedn");
         $this -> conn = FALSE;
         $this -> logger = new Logger($config["logPath"]);
@@ -65,7 +66,7 @@ class Lucid_LDAP {
             if($entry){
                 do {
                     $i++;
-                    array_push($results, array( 
+                    array_push($results, array(
                         "givenName" => $this->getFirstValue($entry,"givenName"),
                         "middleName" => $this->getFirstValue($entry,"middleName"),
                         "sn" => $this->getFirstValue($entry,"sn"),
@@ -87,12 +88,13 @@ class Lucid_LDAP {
     public function getAttributes($username, $attrs){
         list($entry, $dn) = $this -> searchUser($username, $attrs);
         $result = array();
-        for ($i=0;$i<count($attrs);$i++){
+        for ($i=0; $i<count($attrs); $i++){
             $values = $this -> getAllValues($entry, $attrs[$i]);
-            if(empty($values)){
-               throw new AttributeNotFoundException($username, $attrs[$i]);
+            if(empty($values)) {
+                $result[$attrs[$i]] = array();
+            } else {
+                $result[$attrs[$i]] = $values;
             }
-            $result[$attrs[$i]] = $values;
         }
         return $result;
     }
@@ -166,7 +168,7 @@ class Lucid_LDAP {
     private function getFirstValue($entry, $attrib){
         $values = @ldap_get_values($this->conn, $entry,$attrib);
         if(empty($values) || ($values["count"] === 0)){
-            return "-";
+            return NULL;
         } else {
             return $values[0];
         }
@@ -235,12 +237,6 @@ class InvalidCredentialsException extends Exception {
 class ADNotBoundException extends Exception {
     public function __construct($msg = "Not Bound to Active Directory", $code = 0, Exception $previous = null) {
         parent::__construct($msg, $code, $previous);
-    }
-}
-
-class AttributeNotFoundException extends Exception {
-    public function __construct($uname, $attrib, $code = 0, Exception $previous = null) {
-        parent::__construct("Attribute $attrib not found for user $uname", $code, $previous);
     }
 }
 
