@@ -3,10 +3,10 @@ require_once("user.php");
 class Admin extends User {
     //Resets password of user given by $dn to $newPwd
     public function resetPwd($dn, $newPwd){
-        $unicodePwd = adifyPw($newPwd); 
+        $unicodePwd = adifyPw($newPwd);
         $ldapObj = new Lucid_LDAP($this->configFile);
         $ldapObj -> bind($this->username, $this->password);
-        $status = $ldapObj -> updateAttribute($dn, "unicodePwd", $unicodePwd); 
+        $status = $ldapObj -> updateAttribute($dn, "unicodePwd", $unicodePwd);
         $ldapObj -> destroy();
         if($status === true){
             $this->loggerObj -> log("ADMIN::info::$this->username has Reset Password for $dn successfully");
@@ -23,7 +23,7 @@ class Admin extends User {
         $ldapObj -> bind($this->username, $this->password);
         $result = $ldapObj -> getAttributes($uname,array_merge($attr, array("name", "mail","distinguishedName")));
         $ldapObj -> destroy();
-        $final =  array( 
+        $final =  array(
             "name" => $result["name"][0],
             "mail" =>  $result["mail"][0],
             "dn" => $result["distinguishedName"][0]
@@ -47,7 +47,7 @@ class Admin extends User {
         $ldapObj = new Lucid_LDAP($this->configFile);
         if($property === "VPN"){
             $attrib = $ldapObj -> VPN;
-        } 
+        }
         if($property === "SSH"){
             $attrib = $ldapObj -> SSH;
         }
@@ -68,7 +68,7 @@ class Admin extends User {
     //Returns the status of creating the user with given attributes
     public function createUser($fn, $ln, $mn, $uname, $pwd, $groups, $phType, $ph, $domain){
         $ldapObj = new Lucid_LDAP($this->configFile);
-        // Use sAMAccountName in commonName 
+        // Use sAMAccountName in commonName
         $newEntry = array(
             'givenName'  => $fn,
             'sn'         => $ln,

@@ -66,7 +66,7 @@ class Lucid_LDAP {
             if($entry){
                 do {
                     $i++;
-                    array_push($results, array( 
+                    array_push($results, array(
                         "givenName" => $this->getFirstValue($entry,"givenName"),
                         "middleName" => $this->getFirstValue($entry,"middleName"),
                         "sn" => $this->getFirstValue($entry,"sn"),
