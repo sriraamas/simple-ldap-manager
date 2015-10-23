@@ -13,7 +13,8 @@ class Lucid_LDAP {
         $this -> domain = $config["domain"];
         $this -> basedn = $config["basedn"];
         $this -> userBaseDn = $config["userDn"];
-        $this -> userdn = ldap_escape("$this->userBaseDn,$this->basedn");
+        $this -> createUserDn = ldap_escape($config["createUserDn"].",$this->basedn");
+        $this -> searchUserDn = ldap_escape($config["searchUserDn"].",$this->basedn");
         $this -> groupdn = ldap_escape("ou=groups,$this->basedn");
         $this -> conn = FALSE;
         $this -> logger = new Logger($config["logPath"]);
@@ -40,7 +41,7 @@ class Lucid_LDAP {
             throw new ADNotBoundException();
         }
         $eUserName = ldap_escape($username);
-        $entries = ldap_search($this -> conn, $this->userdn,"(sAMAccountName=$eUserName)", $attr);
+        $entries = ldap_search($this -> conn, $this->searchUserDn, "(sAMAccountName=$eUserName)", $attr);
         $count = ldap_count_entries($this -> conn, $entries);
         $this -> logger -> log("Lucid_LDAP::info::LDAP Search Complete for '$eUserName', found $count entries");
         if($count > 0){
@@ -57,7 +58,7 @@ class Lucid_LDAP {
             throw new ADNotBoundException();
         }
         $results = array();
-        $entries = ldap_search($this -> conn, $this->userdn, $filter,array("givenName","middleName","sn", "sAMAccountName","sn","memberOf","mobile","mail","homePhone","userAccountControl"));
+        $entries = ldap_search($this -> conn, $this->searchUserDn, $filter, array("givenName","middleName","sn", "sAMAccountName","sn","memberOf","mobile","mail","homePhone","userAccountControl"));
         $count = ldap_count_entries($this -> conn, $entries);
         $this -> logger -> log("Lucid_LDAP::info::LDAP Search Complete for filter $filter, found $count entries");
         if($count > 0){
@@ -153,7 +154,7 @@ class Lucid_LDAP {
     }
     public function getUsersinGroup($groupDn){
         $users = array();
-        $results = ldap_search($this->conn, $this->userdn, "(memberof:1.2.840.113556.1.4.1941:=$groupDn)",array("cn"));
+        $results = ldap_search($this->conn, $this->searchUserDn, "(memberof:1.2.840.113556.1.4.1941:=$groupDn)", array("cn"));
         $count = ldap_count_entries($this->conn,$results);
         if ($count > 0){
             $entry = ldap_first_entry($this->conn,$results);

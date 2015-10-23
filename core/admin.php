@@ -91,7 +91,7 @@ class Admin extends User {
             $newEntry['mobile'] = $ph;
         }
         // The DN for the new user
-        $dn = ldap_escape("cn=$uname,").$ldapObj->userdn;
+        $dn = ldap_escape("cn=$uname,").$ldapObj->createUserDn;
         $ldapObj -> bind($this->username, $this->password);
         $status = $ldapObj -> addEntry($dn,$newEntry);
         if(!empty($groups)){
