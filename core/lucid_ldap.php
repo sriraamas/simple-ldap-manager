@@ -12,7 +12,6 @@ class Lucid_LDAP {
             throw new Exception("No Config file found");
         $this -> domain = $config["domain"];
         $this -> basedn = $config["basedn"];
-        $this -> userBaseDn = $config["userDn"];
         $this -> createUserDn = ldap_escape($config["createUserDn"].",$this->basedn");
         $this -> searchUserDn = ldap_escape($config["searchUserDn"].",$this->basedn");
         $this -> groupdn = ldap_escape("ou=groups,$this->basedn");
