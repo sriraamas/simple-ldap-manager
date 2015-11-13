@@ -129,6 +129,7 @@ var handlers = {
             form.submit.disable(formDom,"Searching");
             form.submit.loading.show(formDom);
             $("#avlbl").empty();
+            storage.groupSearch = {};
             var token = utils.getCookie("xsrftoken");
             var req = $.post( $(formDom)[0].action,$(formDom).serialize() + "&xsrftoken="+token, handlers.admin.action.groupSearch.confirm);
             req.fail(function(){
@@ -340,12 +341,13 @@ var handlers = {
             },
             groupSearch:{
                 confirm: function(data){
+                    storage.groupSearch.users = {}
                     var alertClose = document.getElementById("alertClose");
                     if(alertClose)
                         alertClose.click();
                     if(data["success"]){
-                         $("#searchResult").html("<table class='tdisplay dataTable stripe' id='table_id'></table>");
-                         $("#table_id").dataTable({
+                        $("#searchResult").html("<table class='tdisplay dataTable stripe' id='table_id'></table>");
+                        var table = $("#table_id").DataTable({
                             "data" : data["data"],
                             "columns" : [
                                 {"title": "Group Name","data" : "sAMAccountName"},
@@ -356,41 +358,9 @@ var handlers = {
                                 }
                             ]
                         })
+                        var usersColSelector = $(table.columns().nodes()[1]).find('.userAccordion');
+                        usersColSelector.on('toggled', handlers.admin.action.groupSearch.onToggle);
                         $(document).foundation('accordion', 'reflow');
-                        $('.userAccordion').on('toggled', function (event, accordion) {
-                            var groupId = accordion.parent()[0].id;
-                            if(!$("#"+groupId+"Users").data("users")) {
-                                $(accordion).html("<img src='/img/loading.gif' class='loading' id='loading' />");
-                                var encId = encodeURIComponent(groupId);
-                                var token = utils.getCookie("xsrftoken");
-                                var query = $.post("/admin/getUsersInGroup.php",
-                                $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId + "&xsrftoken=" + token,
-                                function(data){
-                                    if(data["success"]){
-                                        var str;
-                                        var users = data["data"];
-                                        if(users.length > 0) {
-                                            str = "<ul>";
-                                            for (var i=0; i< users.length;i++){
-                                                str += "<li><span class='text-center label radius' >";
-                                                str += users[i];
-                                                str += "</span></li>";
-                                            }
-                                        } else {
-                                            str = "No Users";
-                                        }
-                                        $(accordion).html(str);
-                                       $("#"+groupId+"Users").data("users",true);
-                                    } else {
-                                        $(accordion).html("<span class='text-center' style='color:red'>"+data["errors"][0] + "</span>");
-                                    }
-                                });
-                            query.fail(function(){
-                                $(accordion).html("<span class='text-center' style='color:red'> Error Occured </span>");
-                            });
-                           }
-
-                        });
                     } else {
                         utils.alert("warning",data["errors"][0]);
                         $("#searchResult").html("");
@@ -398,6 +368,37 @@ var handlers = {
                     var formDom = $("section.active").find("form")
                     form.submit.enable(formDom);
                     form.submit.loading.hide(formDom);
+                },
+                onToggle: function(event, accordion) {
+                    var groupId = accordion.parent()[0].id;
+                    if(!(groupId in storage.groupSearch.users)) {
+                        $(accordion).html("<img src='/img/loading.gif' class='loading' id='loading' />");
+                        var encId = encodeURIComponent(groupId);
+                        var token = utils.getCookie("xsrftoken");
+                        var query = $.post("/admin/getUsersInGroup.php",
+                            $("section.active form").find("#aname,#apwd").serialize() +"&uname="+encId + "&xsrftoken=" + token,
+                            function(data){
+                                var str = "No Users";
+                                if(data["success"]){
+                                    var users = data["data"];
+                                    if(users.length > 0) {
+                                        str = "<ul>";
+                                        for (var i=0; i< users.length;i++){
+                                            str += "<li><span class='text-center label radius' >";
+                                            str += users[i];
+                                            str += "</span></li>";
+                                        }
+                                    }
+                                    storage.groupSearch.users[groupId] = true;
+                                } else {
+                                    str = "<span class='text-center' style='color:red'>"+data["errors"][0] + "</span>";
+                                }
+                                $(accordion).html(str);
+                        });
+                        query.fail(function(){
+                            $(accordion).html("<span class='text-center' style='color:red'> Error Occured </span>");
+                        });
+                    }
                 }
             }
         },
@@ -428,4 +429,8 @@ var handlers = {
             }
         }
     }   
+}
+
+var storage = {
+
 }

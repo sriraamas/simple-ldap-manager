@@ -6,14 +6,15 @@ class User {
     public $username;
     public $password;
     public $loggerObj;
-    public $configFile = "config.ini";
-
+    public $configFile;
 
     public function __construct($username, $password){
         $this -> username = $username;
         $this -> password = $password;
         $this -> loggerObj = new Logger(getConfig("logPath"));
+        $this -> configFile = getConfigFile();
     }
+
     public function isAuthorized(){
         $ldapObj = new Lucid_LDAP($this->configFile);
         $status = $ldapObj->bind($this->username, $this->password);
