@@ -105,9 +105,9 @@ class User {
             throw new Exception("Cannot create Zip File");
         }
         $updateStatus = $this -> updateMyProperty("VPN", $cert);
-        if(!$updateStatus){
+        if($updateStatus !== TRUE){
             unlink($zipFilename);
-            throw new Exception("Error occured during LDAP Update. Please try again Later!");
+            throw new Exception("Error occured during LDAP Update: $updateStatus. Please try again Later!");
         }
         $this -> loggerObj -> log( "VPN Credentials for $this->username have been reset successfully");
         return($zipFilename);
