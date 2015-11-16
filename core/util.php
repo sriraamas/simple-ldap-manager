@@ -52,7 +52,7 @@ abstract class ADUserAccountStatus
 //Returns Client Certificate and PrivateKey for a user of $commonName, $email and length $keyLength
 function generateSslKeypair( $commonName, $keyLength){
   $key = openssl_pkey_new(array("private_key_bits" =>$keyLength));
-  $certConf = parse_ini_file("cert.conf",true);
+  $certConf = parse_ini_file("cert.ini",true);
   $default = getDefaultConfPath();
   if(file_exists($default."/cert-overrides.ini")){
     $confFile = $default."/cert-overrides.ini";
