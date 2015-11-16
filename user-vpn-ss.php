@@ -1,7 +1,8 @@
 <?php
 require_once("core/util.php");
-$randomStr = randomPassword(16);
-setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 day
+  $randomStr = randomPassword(16);
+  setcookie("xsrftoken", $randomStr , time() + (86400 * 30), "/"); // 86400 = 1 day
+  $vpn2Enabled = getConfig("vpn2") != NULL;
 ?>
 <!DOCTYPE html>
 <!-- saved from url=(0049)http://foundation.zurb.com/templates/sidebar.html -->
@@ -64,6 +65,36 @@ include("topnav.phtml")
             </form>
             <small>Note: Downloading credentials does not work well in Safari. Consider using another browser</small>
           </section>
+          <?php if ($vpn2Enabled) { ?>
+            <section role="tabpanel" aria-hidden="true" class="active content" id="panel2-2">
+              <form id="genVpn2" action="/user/vpngen2.php" method="POST" data-abide>
+                <p class="sectionHead">Regenerate Secondary VPN Credentials</p>
+                <div class="row">
+                  <div class="large-4 small-2 push-1 columns">
+                    <label  class="required" for="uname">Username
+                      <input type="text" name="uname" required id="uname" />
+                    </label>
+                    <small class="error"> Username cannot be blank!</small>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="large-4 small-2 push-1 columns">
+                    <label  class="required" for="pwd">Password
+                      <input id="pwd" name="pwd" required type="password" />
+                    </label>
+                    <small class="error"> Password cannot be blank!</small>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="large-4 small-2 push-1 columns">
+                    <input type="submit" value="Regenerate" class="button radius mybutton"/>
+                    <img src="/img/loading.gif" class="loading" id="loading" style="display:none;"/>
+                  </div>
+                </div>
+              </form>
+              <small>Note: Downloading credentials does not work well in Safari. Consider using another browser</small>
+            </section>
+          <?php } ?>
         </div>
       </div>
     </div>
