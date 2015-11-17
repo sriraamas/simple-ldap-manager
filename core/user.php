@@ -13,6 +13,8 @@ class User {
         $this -> password = $password;
         $this -> loggerObj = new Logger(getConfig("logPath"));
         $this -> configFile = getConfigFile();
+        $this -> vpnFolder = getConfig("vpnFolderPath");
+        $this -> vpn2Folder = getConfig("vpn2FolderPath");
     }
 
     public function isAuthorized(){
@@ -63,11 +65,19 @@ class User {
     }
 
     public function genMyVpnKeys(){
+        return $this->genUserVpnKeys("VPN", $this->vpnFolder);
+    }
+
+    public function genMySecondaryVpnKeys(){
+        return $this->genUserVpnKeys("VPN-Secondary", $this->vpn2Folder);
+    }
+
+    private function genUserVpnKeys($vpnProperty, $vpnFolder){
         $tmpPath = getConfig("tmpPath");
         $result = $this->getMyAttributes(array("cn","sAMAccountName"));
         $this -> loggerObj -> log( "Regenerating VPN Credentials for $this->username");
         $zip = new ZipArchive();
-        $zipFilename = "$tmpPath/$this->username.vpn.credentials.zip";
+        $zipFilename = "$tmpPath/$this->username.$vpnProperty.credentials.zip";
 
         $status = $zip -> open("$zipFilename", ZipArchive::OVERWRITE);
         if ($status !== TRUE){
@@ -91,7 +101,6 @@ class User {
         }
 
         // Try to add the source vpn files
-        $vpnFolder = getConfig("vpnFolderPath");
         if(file_exists($vpnFolder)){
             zipFolder($zip,$vpnFolder);
         }
@@ -104,10 +113,10 @@ class User {
         if ($status !== TRUE){
             throw new Exception("Cannot create Zip File");
         }
-        $updateStatus = $this -> updateMyProperty("VPN", $cert);
-        if(!$updateStatus){
+        $updateStatus = $this -> updateMyProperty($vpnProperty, $cert);
+        if($updateStatus !== TRUE){
             unlink($zipFilename);
-            throw new Exception("Error occured during LDAP Update. Please try again Later!");
+            throw new Exception("Error occured during LDAP Update: $updateStatus. Please try again Later!");
         }
         $this -> loggerObj -> log( "VPN Credentials for $this->username have been reset successfully");
         return($zipFilename);
@@ -130,6 +139,9 @@ class User {
         }
         if($prop === "VPN"){
             $attr = $ldapObj -> VPN;
+        }
+        if($prop === "VPN-Secondary"){
+            $attr = $ldapObj -> VPN2;
         }
         if (!isset($attr)){
             throw new Exception("Unknown Property $prop");

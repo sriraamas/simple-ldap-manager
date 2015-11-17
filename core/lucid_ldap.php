@@ -19,6 +19,7 @@ class Lucid_LDAP {
         $this -> logger = new Logger($config["logPath"]);
         $this -> url = $config['hostname'].":".$config['port'];
         $this -> VPN = $config['vpn'];
+        $this -> VPN2 = $config['vpn2'];
         $this -> SSH = $config['ssh'];
         $this -> tmpPath = $config['tmpPath'];
     }

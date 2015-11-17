@@ -12,6 +12,12 @@ $(window).load(function() {
         }
         event.preventDefault();
     });
+    $("#genVpn2").submit( function(event) {
+        if(form.canSubmit(this)){
+            handlers.user.genVpn2(event);
+        }
+        event.preventDefault();
+    });
     $("#genSsh").submit( function(event){
         if(form.canSubmit(this)){
             handlers.user.genSsh(event);
@@ -86,6 +92,23 @@ var handlers = {
             });
 
         },
+        genVpn2: function(event){
+            var alertClose = document.getElementById("alertClose");
+                if(alertClose)
+                    alertClose.click();
+            var token = utils.getCookie("xsrftoken");
+            var formDom = event.target;
+            form.submit.loading.show(formDom);
+            form.submit.disable(formDom,"Regenerating VPN Credentials");
+            var req = $.post( $(formDom)[0].action,$(formDom).serialize() +"&xsrftoken="+token, handlers.user.action.genVpn2);
+            req.fail(function(){
+                utils.alert("alert","Request to Generate VPN Credentials Failed");
+            });
+            req.always(function(){
+                form.submit.enable(formDom);
+                form.submit.loading.hide(formDom);
+            });
+        },
         genSsh: function(event){
             var alertClose = document.getElementById("alertClose");
                 if(alertClose)
@@ -123,6 +146,16 @@ var handlers = {
                     utils.alert("warning", "VPN Credentials failed to generate. Reason: "+ data["errors"][0]);
                 }
 
+            },
+            genVpn2: function(data){
+                if(data["success"]){
+                    form.clearInputs("genVpn2");
+                    var dataBlob = b64toBlob(data["data"]["contents"], 'application/zip');
+                    saveAs(dataBlob, data["data"]["filename"])
+                    utils.alert("success", "VPN Credentials generated Successfully. They will be downloaded shortly. If it failed to download, click <a id='downId' download = '"+data["data"]["filename"] +"' href='data:application/zip;base64," + data['data']['contents'] + "'>here</a>");
+                } else {
+                    utils.alert("warning", "VPN Credentials failed to generate. Reason: "+ data["errors"][0]);
+                }
             },
             genSsh: function(data){
                 if(data["success"]){
