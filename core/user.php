@@ -37,7 +37,8 @@ class User {
         $this -> loggerObj -> log( "Changing password for $this->username");
         $oldPwdEnc = base64_encode(adifyPw($this->password));
         $newPwdEnc = base64_encode(adifyPw($newPwd));
-        $cmd = "ldapmodify -H $ldapObj->url -D '$dn' -x -w $this->password";
+        $cmdPwd = "'$this->password'";
+        $cmd = "ldapmodify -H $ldapObj->url -D '$dn' -x -w $cmdPwd";
         $descriptorspec = array(
             0 => array("pipe", "r"),
             1 => array("pipe", "w"),
