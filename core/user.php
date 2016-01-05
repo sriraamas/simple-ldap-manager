@@ -37,32 +37,46 @@ class User {
         $this -> loggerObj -> log( "Changing password for $this->username");
         $oldPwdEnc = base64_encode(adifyPw($this->password));
         $newPwdEnc = base64_encode(adifyPw($newPwd));
-        $cmdPwd = "'$this->password'";
-        $cmd = "ldapmodify -H $ldapObj->url -D '$dn' -x -w $cmdPwd";
-        $descriptorspec = array(
-            0 => array("pipe", "r"),
-            1 => array("pipe", "w"),
-            2 => array("pipe", "w")
-        );
-        $child = proc_open(escapeshellcmd($cmd),$descriptorspec,$pipes);
-        $ldif_file = array("dn: $dn",
-            "changetype: modify",
-            "delete: unicodePwd",
-            "unicodePwd:: $oldPwdEnc",
-            "-",
-            "add: unicodePwd",
-            "unicodePwd:: $newPwdEnc",
-            "-");
-        fwrite($pipes[0], implode("\n", $ldif_file)."\n");
-        fclose($pipes[0]);
-        $output1 = stream_get_contents($pipes[1]);
-        $output2 = stream_get_contents($pipes[2]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
-        $status = proc_close($child);
-        $this -> loggerObj -> log("LDAPModify exited with status: $status");
-        $this -> loggerObj -> log("LDAPModify Output: $output1\n $output2");
-        return(array($status,$output2));
+
+        $tmpPath = getConfig("tmpPath");
+        $tmpName = tempnam($tmpPath, "ldap-");
+
+        try {
+            $tmpFile = fopen($tmpName, "w+");
+            fwrite($tmpFile, $this->password);
+            fclose($tmpFile);
+
+            $cmd = "ldapmodify -H $ldapObj->url -D '$dn' -x -y $tmpName";
+            $descriptorspec = array(
+                0 => array("pipe", "r"),
+                1 => array("pipe", "w"),
+                2 => array("pipe", "w")
+            );
+            $child = proc_open(escapeshellcmd($cmd),$descriptorspec,$pipes);
+            $ldif_file = array("dn: $dn",
+                "changetype: modify",
+                "delete: unicodePwd",
+                "unicodePwd:: $oldPwdEnc",
+                "-",
+                "add: unicodePwd",
+                "unicodePwd:: $newPwdEnc",
+                "-");
+            fwrite($pipes[0], implode("\n", $ldif_file)."\n");
+            fclose($pipes[0]);
+            $output1 = stream_get_contents($pipes[1]);
+            $output2 = stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $status = proc_close($child);
+            $this -> loggerObj -> log("LDAPModify exited with status: $status");
+            $this -> loggerObj -> log("LDAPModify Output: $output1\n $output2");
+            return(array($status,$output2));
+        }
+        finally {
+            if ($tmpFile) {
+                unlink($tmpName);
+            }
+        }
     }
 
     public function genMyVpnKeys(){
